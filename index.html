@@ -109,7 +109,7 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div><label>Categoria</label><select id="category"><option>B</option><option>A</option><option>AB</option></select></div>
 <div class="full"><label>Horários disponíveis</label><div id="times" class="times"></div></div>
 <div><label>Nome completo</label><input id="name" placeholder="Seu nome"></div>
-<div><label>WhatsApp</label><input id="phone" placeholder="(19) 99999-9999"></div>
+<div><label>WhatsApp</label><input id="phone" placeholder="(94) 99999-9999"></div>
 <div class="full"><label>Observação</label><textarea id="obs" rows="3" placeholder="Alguma informação para o instrutor?"></textarea></div>
 </div>
 <div id="summary" class="summary">Selecione uma aula, data e horário.</div>
@@ -147,6 +147,7 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <button class="tab" onclick="showTab('config',this)">Configurações</button>
 <button class="tab" onclick="showTab('servicos',this)">Serviços</button>
 <button class="tab" onclick="showTab('depo',this)">Depoimentos</button>
+<button class="tab" onclick="showTab('fotos',this)">Fotos</button>
 </div>
 <div id="tab-agenda" class="admin-panel active"><h3>Agendamentos salvos neste dispositivo</h3><div id="adminBookings" class="admin-list"></div><br><button class="btn danger" onclick="clearBookings()">Limpar agenda local</button></div>
 <div id="tab-config" class="admin-panel">
@@ -158,10 +159,12 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div class="full"><label>Endereço/local de atendimento</label><input id="cfgAddress"></div>
 <div class="full"><label>Link do Google Maps</label><input id="cfgMap"></div>
 <div class="full"><label>Horários separados por vírgula</label><input id="cfgTimes"></div>
-</div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button>
+<div class="full"><label>Nova senha administrativa</label><input id="cfgAdminPass" type="password" placeholder="Deixe em branco para manter atual"></div>
+</div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button><button class="btn btn-ghost" style="color:var(--text);border-color:#cbd5e1;margin-left:8px" onclick="exportConfig()">📋 Copiar código base</button>
 </div>
 <div id="tab-servicos" class="admin-panel"><label>Serviços: nome|preço;nome|preço</label><input id="cfgServices"><p class="muted">Exemplo: Aula particular B|80;Aula para habilitados|90</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
 <div id="tab-depo" class="admin-panel"><label>Depoimentos: nome|texto;nome|texto</label><textarea id="cfgTestimonials" rows="7"></textarea><br><br><button class="btn btn-blue" onclick="saveTestimonials()">Salvar depoimentos</button></div>
+<div id="tab-fotos" class="admin-panel"><label>Fotos da galeria (1 link por linha, até 5 imagens)</label><textarea id="cfgGallery" rows="6" placeholder="https://imagem1.jpg&#10;https://imagem2.jpg"></textarea><br><br><button class="btn btn-blue" onclick="saveGallery()">Salvar fotos</button></div>
 <p id="adminMsg" class="muted"></p>
 </div>
 </div>
@@ -172,91 +175,337 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <a id="floatWa" class="float-wa" href="#" target="_blank" aria-label="WhatsApp">💬</a>
 
 <script>
-const base={
-<<<<<<< HEAD
-phone:"5594981911783",deposit:0,pix:"",pay:"",
-=======
-phone:"5519999999999",deposit:0,pix:"",pay:"",
->>>>>>> 5f36f38b321a6e2a6b1f805f7f834749c27a4532
-address:"Endereço a definir",map:"",
-times:["08:00","09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
-services:[["Aula particular - Categoria B",80],["Aula particular - Categoria A",80],["Aula particular - Categoria AB",90]],
-testimonials:[["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."]]
-};
-let cfg=JSON.parse(localStorage.getItem("gsa_cfg")||"null")||base;
-let bookings=JSON.parse(localStorage.getItem("gsa_bookings")||"{}");
-let selectedTime=null;
+const defaultGallery = [
+  "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1100&q=85",
+  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=700&q=85",
+  "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=700&q=85",
+  "https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&w=700&q=85",
+  "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=700&q=85"
+];
 
-function $(id){return document.getElementById(id)}
-function waLink(){return "https://wa.me/"+String(cfg.phone).replace(/\D/g,"")}
+const base = {
+  phone: "5594981911783",
+  deposit: 0,
+  pix: "",
+  pay: "",
+  address: "Endereço a definir",
+  map: "",
+  times: ["08:00","09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+  services: [["Aula particular - Categoria B",80],["Aula particular - Categoria A",80],["Aula particular - Categoria AB",90]],
+  testimonials: [["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."]],
+  gallery: defaultGallery,
+  adminPass: "1234"
+};
+
+let cfg = JSON.parse(localStorage.getItem("gsa_cfg") || "null");
+if (!cfg || cfg.phone === "5519999999999" || !cfg.phone) {
+  cfg = Object.assign({}, base, cfg || {}, { phone: "5594981911783" });
+  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
+}
+if (!cfg.gallery || !cfg.gallery.length) cfg.gallery = defaultGallery;
+if (!cfg.adminPass) cfg.adminPass = "1234";
+
+let bookings = JSON.parse(localStorage.getItem("gsa_bookings") || "{}");
+let selectedTime = null;
+
+function $(id){ return document.getElementById(id); }
+
+function getLocalDateStr(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function waLink(){
+  let n = String(cfg.phone || "5594981911783").replace(/\D/g, "");
+  if (n.length === 10 || n.length === 11) {
+    n = "55" + n;
+  }
+  return "https://wa.me/" + n;
+}
+
+function formatPhone(x){
+  let n = String(x || "").replace(/\D/g, "");
+  if (n.startsWith("55") && (n.length === 12 || n.length === 13)) {
+    n = n.slice(2);
+  }
+  if (n.length === 11) {
+    return "(" + n.slice(0, 2) + ") " + n.slice(2, 7) + "-" + n.slice(7);
+  }
+  if (n.length === 10) {
+    return "(" + n.slice(0, 2) + ") " + n.slice(2, 6) + "-" + n.slice(6);
+  }
+  return n || "Configurar";
+}
+
 function renderAll(){
- $("service").innerHTML=cfg.services.map((s,i)=>`<option value="${i}">${esc(s[0])} — R$ ${money(s[1])}</option>`).join("");
- $("serviceCards").innerHTML=cfg.services.map(s=>`<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3><p>Aula individual com acompanhamento personalizado.</p><div class="price">R$ ${money(s[1])}</div><a class="btn btn-blue" href="#agendar">Escolher esta aula</a></div>`).join("");
- $("testimonialCards").innerHTML=cfg.testimonials.map(t=>`<div class="card"><div class="stars">★★★★★</div><p class="quote">“${esc(t[1])}”</p><div class="person">${esc(t[0])}</div></div>`).join("");
- $("displayPhone").textContent=cfg.phone?formatPhone(cfg.phone):"Configurar";
- $("address").textContent=cfg.address||"Endereço a definir";
- $("mapLink").href=cfg.map||"#";
- $("floatWa").href=waLink();
- $("heroWhats").href=waLink();
- $("cfgPhone").value=cfg.phone;$("cfgDeposit").value=cfg.deposit;$("cfgPix").value=cfg.pix;$("cfgPay").value=cfg.pay;$("cfgAddress").value=cfg.address;$("cfgMap").value=cfg.map;$("cfgTimes").value=cfg.times.join(",");
- $("cfgServices").value=cfg.services.map(s=>s[0]+"|"+s[1]).join(";");
- $("cfgTestimonials").value=cfg.testimonials.map(t=>t[0]+"|"+t[1]).join(";");
- renderTimes();renderSummary();renderAdminBookings();
+  $("service").innerHTML = cfg.services.map((s, i) => `<option value="${i}">${esc(s[0])} — R$ ${money(s[1])}</option>`).join("");
+  $("serviceCards").innerHTML = cfg.services.map(s => `<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3><p>Aula individual com acompanhamento personalizado.</p><div class="price">R$ ${money(s[1])}</div><a class="btn btn-blue" href="#agendar">Escolher esta aula</a></div>`).join("");
+  $("testimonialCards").innerHTML = cfg.testimonials.map(t => `<div class="card"><div class="stars">★★★★★</div><p class="quote">“${esc(t[1])}”</p><div class="person">${esc(t[0])}</div></div>`).join("");
+  $("displayPhone").textContent = cfg.phone ? formatPhone(cfg.phone) : "Configurar";
+  $("address").textContent = cfg.address || "Endereço a definir";
+  $("mapLink").href = cfg.map || "#";
+  $("floatWa").href = waLink();
+  $("heroWhats").href = waLink();
+
+  let gall = (cfg.gallery && cfg.gallery.length) ? cfg.gallery : defaultGallery;
+  for(let g = 0; g < 5; g++){
+    let el = document.querySelector(".g" + (g + 1));
+    if(el && gall[g]) el.style.backgroundImage = `url('${gall[g]}')`;
+  }
+
+  $("cfgPhone").value = cfg.phone || "";
+  $("cfgDeposit").value = cfg.deposit || 0;
+  $("cfgPix").value = cfg.pix || "";
+  $("cfgPay").value = cfg.pay || "";
+  $("cfgAddress").value = cfg.address || "";
+  $("cfgMap").value = cfg.map || "";
+  $("cfgTimes").value = (cfg.times || []).join(",");
+  $("cfgAdminPass").value = "";
+  $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1]).join(";");
+  $("cfgTestimonials").value = (cfg.testimonials || []).map(t => t[0] + "|" + t[1]).join(";");
+  $("cfgGallery").value = gall.join("\n");
+
+  renderTimes();
+  renderSummary();
+  renderAdminBookings();
 }
+
 function renderTimes(){
- const date=$("date").value;$("times").innerHTML="";selectedTime=null;
- if(!date){return}
- cfg.times.forEach(t=>{let key=date+"_"+t,busy=!!bookings[key];let b=document.createElement("button");b.className="time"+(busy?" busy":"");b.textContent=busy?t+" • ocupado":t;b.disabled=busy;b.onclick=()=>{selectedTime=t;renderTimes();renderSummary()};$("times").appendChild(b)})
+  const date = $("date").value;
+  $("times").innerHTML = "";
+  if(!date){ return; }
+  cfg.times.forEach(t => {
+    let key = date + "_" + t;
+    let busy = !!bookings[key];
+    let isSelected = (selectedTime === t);
+    let b = document.createElement("button");
+    b.className = "time" + (busy ? " busy" : "") + (isSelected ? " active" : "");
+    b.textContent = busy ? t + " • ocupado" : t;
+    b.disabled = busy;
+    b.onclick = () => {
+      if(busy) return;
+      selectedTime = t;
+      renderTimes();
+      renderSummary();
+    };
+    $("times").appendChild(b);
+  });
 }
+
 function renderSummary(){
- let i=Number($("service").value||0),s=cfg.services[i];
- if(!s||!$("date").value||!selectedTime){$("summary").innerHTML="Selecione uma aula, data e horário.";return}
- $("summary").innerHTML=`<b>Aula:</b> ${esc(s[0])}<br><b>Data:</b> ${dateBR($("date").value)}<br><b>Horário:</b> ${selectedTime}<br><b>Valor:</b> R$ ${money(s[1])}<br><b>Sinal:</b> R$ ${money(cfg.deposit)}`;
- $("depositInfo").innerHTML=Number(cfg.deposit)>0?`<p class="muted">Sinal configurado: <b>R$ ${money(cfg.deposit)}</b>${cfg.pix?" • Pix disponível após o envio.":""}</p>`:"";
+  let i = Number($("service").value || 0);
+  let s = cfg.services[i];
+  if(!s || !$("date").value || !selectedTime){
+    $("summary").innerHTML = "Selecione uma aula, data e horário.";
+    return;
+  }
+  let cat = $("category").value || "B";
+  $("summary").innerHTML = `<b>Aula:</b> ${esc(s[0])}<br><b>Categoria:</b> ${esc(cat)}<br><b>Data:</b> ${dateBR($("date").value)}<br><b>Horário:</b> ${selectedTime}<br><b>Valor:</b> R$ ${money(s[1])}<br><b>Sinal:</b> R$ ${money(cfg.deposit)}`;
+  $("depositInfo").innerHTML = Number(cfg.deposit) > 0 ? `<p class="muted">Sinal configurado: <b>R$ ${money(cfg.deposit)}</b>${cfg.pix ? " • Pix disponível após o envio." : ""}</p>` : "";
 }
+
 function confirmBooking(){
- let i=Number($("service").value||0),s=cfg.services[i],name=$("name").value.trim(),phone=$("phone").value.trim(),date=$("date").value;
- if(!s||!date||!selectedTime||!name||!phone){alert("Preencha nome, WhatsApp, aula, data e horário.");return}
- let key=date+"_"+selectedTime;if(bookings[key]){alert("Esse horário já está ocupado.");renderTimes();return}
- bookings[key]={name,phone,service:s[0],date,time:selectedTime,category:$("category").value,obs:$("obs").value,created:new Date().toLocaleString("pt-BR")};
- localStorage.setItem("gsa_bookings",JSON.stringify(bookings));
- let msg=`Olá, Gerson! Gostaria de agendar uma aula particular.%0A%0AAluno: ${enc(name)}%0AWhatsApp: ${enc(phone)}%0ACategoria: ${$("category").value}%0AAula: ${enc(s[0])}%0AData: ${enc(dateBR(date))}%0AHorário: ${selectedTime}%0AValor: R$ ${money(s[1])}%0ASinal: R$ ${money(cfg.deposit)}%0AObservação: ${enc($("obs").value||"Nenhuma")}`;
- window.open(waLink()+"?text="+msg,"_blank");renderTimes();renderAdminBookings();
+  let i = Number($("service").value || 0);
+  let s = cfg.services[i];
+  let name = $("name").value.trim();
+  let phone = $("phone").value.trim();
+  let phoneDigits = phone.replace(/\D/g, "");
+  let date = $("date").value;
+
+  if(!name || name.length < 3){
+    alert("Por favor, preencha seu nome completo.");
+    $("name").focus();
+    return;
+  }
+  if(!phone || phoneDigits.length < 10){
+    alert("Por favor, informe um número de WhatsApp válido com DDD.");
+    $("phone").focus();
+    return;
+  }
+  if(!date){
+    alert("Por favor, selecione a data da aula.");
+    $("date").focus();
+    return;
+  }
+  let todayStr = getLocalDateStr();
+  if(date < todayStr){
+    alert("A data da aula não pode ser anterior a hoje.");
+    $("date").focus();
+    return;
+  }
+  if(!selectedTime){
+    alert("Por favor, clique e selecione um horário disponível.");
+    return;
+  }
+  if(!s){
+    alert("Por favor, selecione uma aula.");
+    return;
+  }
+
+  let key = date + "_" + selectedTime;
+  if(bookings[key]){
+    alert("Esse horário já está ocupado. Por favor, escolha outro.");
+    renderTimes();
+    return;
+  }
+
+  bookings[key] = {
+    name,
+    phone,
+    service: s[0],
+    date,
+    time: selectedTime,
+    category: $("category").value,
+    obs: $("obs").value,
+    created: new Date().toLocaleString("pt-BR")
+  };
+  localStorage.setItem("gsa_bookings", JSON.stringify(bookings));
+
+  let msg = `Olá, Gerson! Gostaria de agendar uma aula particular.%0A%0AAluno: ${enc(name)}%0AWhatsApp: ${enc(phone)}%0ACategoria: ${$("category").value}%0AAula: ${enc(s[0])}%0AData: ${enc(dateBR(date))}%0AHorário: ${selectedTime}%0AValor: R$ ${money(s[1])}%0ASinal: R$ ${money(cfg.deposit)}%0AObservação: ${enc($("obs").value || "Nenhuma")}`;
+  window.open(waLink() + "?text=" + msg, "_blank");
+  renderTimes();
+  renderAdminBookings();
 }
+
 function openAdmin(){
- let pass=prompt("Senha administrativa:");
- if(pass==="1234"){$("admin").classList.add("open");$("admin").scrollIntoView({behavior:"smooth"});renderAdminBookings()}
- else if(pass!==null)alert("Senha incorreta.");
+  let pass = prompt("Senha administrativa:");
+  let correctPass = cfg.adminPass || "1234";
+  if(pass === correctPass){
+    $("admin").classList.add("open");
+    $("admin").scrollIntoView({behavior:"smooth"});
+    renderAdminBookings();
+  } else if(pass !== null){
+    alert("Senha incorreta.");
+  }
 }
-function showTab(name,el){document.querySelectorAll(".admin-panel").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));$("tab-"+name).classList.add("active");el.classList.add("active")}
+
+function showTab(name, el){
+  document.querySelectorAll(".admin-panel").forEach(x => x.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+  $("tab-" + name).classList.add("active");
+  el.classList.add("active");
+}
+
 function saveConfig(){
- cfg.phone=$("cfgPhone").value.replace(/\D/g,"");cfg.deposit=Number($("cfgDeposit").value||0);cfg.pix=$("cfgPix").value;cfg.pay=$("cfgPay").value;cfg.address=$("cfgAddress").value;cfg.map=$("cfgMap").value;cfg.times=$("cfgTimes").value.split(",").map(x=>x.trim()).filter(Boolean);
- localStorage.setItem("gsa_cfg",JSON.stringify(cfg));renderAll();msg("Configurações salvas.")
+  cfg.phone = $("cfgPhone").value.replace(/\D/g, "");
+  cfg.deposit = Number($("cfgDeposit").value || 0);
+  cfg.pix = $("cfgPix").value;
+  cfg.pay = $("cfgPay").value;
+  cfg.address = $("cfgAddress").value;
+  cfg.map = $("cfgMap").value;
+  cfg.times = $("cfgTimes").value.split(",").map(x => x.trim()).filter(Boolean);
+  let newPass = $("cfgAdminPass").value.trim();
+  if(newPass){
+    cfg.adminPass = newPass;
+    $("cfgAdminPass").value = "";
+  }
+  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
+  renderAll();
+  msg("Configurações salvas.");
 }
+
 function saveServices(){
- cfg.services=$("cfgServices").value.split(";").map(x=>{let a=x.split("|");return[a[0].trim(),Number(a[1]||0)]}).filter(x=>x[0]);
- localStorage.setItem("gsa_cfg",JSON.stringify(cfg));renderAll();msg("Serviços salvos.")
+  cfg.services = $("cfgServices").value.split(";").map(x => {
+    let a = x.split("|");
+    return [a[0].trim(), Number(a[1] || 0)];
+  }).filter(x => x[0]);
+  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
+  renderAll();
+  msg("Serviços salvos.");
 }
+
 function saveTestimonials(){
- cfg.testimonials=$("cfgTestimonials").value.split(";").map(x=>{let a=x.split("|");return[a[0].trim(),a.slice(1).join("|").trim()] }).filter(x=>x[0]&&x[1]);
- localStorage.setItem("gsa_cfg",JSON.stringify(cfg));renderAll();msg("Depoimentos salvos.")
+  cfg.testimonials = $("cfgTestimonials").value.split(";").map(x => {
+    let a = x.split("|");
+    return [a[0].trim(), a.slice(1).join("|").trim()];
+  }).filter(x => x[0] && x[1]);
+  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
+  renderAll();
+  msg("Depoimentos salvos.");
 }
+
+function saveGallery(){
+  cfg.gallery = $("cfgGallery").value.split("\n").map(x => x.trim()).filter(Boolean);
+  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
+  renderAll();
+  msg("Fotos da galeria salvas.");
+}
+
+function exportConfig(){
+  let exportObj = Object.assign({}, cfg);
+  delete exportObj.adminPass;
+  let code = "const base = " + JSON.stringify(exportObj, null, 2) + ";";
+  navigator.clipboard.writeText(code).then(() => {
+    msg("Código base copiado para a área de transferência!");
+  }).catch(() => {
+    prompt("Copie o código base abaixo:", code);
+  });
+}
+
 function renderAdminBookings(){
- let arr=Object.entries(bookings);
- $("adminBookings").innerHTML=arr.length?arr.map(([key,b])=>`<div class="booking-row"><div><b>${esc(b.name)}</b><br><span class="muted">${esc(b.service)} • ${dateBR(b.date)} • ${esc(b.time)} • ${esc(b.phone)}</span></div><button class="btn danger" onclick="removeBooking('${encAttr(key)}')">Excluir</button></div>`).join(""):"<div class='notice'>Nenhum agendamento neste dispositivo.</div>";
+  let arr = Object.entries(bookings);
+  $("adminBookings").innerHTML = arr.length
+    ? arr.map(([key, b]) => `<div class="booking-row"><div><b>${esc(b.name)}</b><br><span class="muted">${esc(b.service)} • ${dateBR(b.date)} • ${esc(b.time)} • ${esc(b.phone)}</span></div><button class="btn danger" onclick="removeBooking('${encAttr(key)}')">Excluir</button></div>`).join("")
+    : "<div class='notice'>Nenhum agendamento neste dispositivo.</div>";
 }
-function removeBooking(key){delete bookings[key];localStorage.setItem("gsa_bookings",JSON.stringify(bookings));renderAdminBookings();renderTimes()}
-function clearBookings(){if(confirm("Excluir todos os agendamentos salvos neste dispositivo?")){bookings={};localStorage.setItem("gsa_bookings","{}");renderAdminBookings();renderTimes()}}
-function msg(t){$("adminMsg").textContent=t;setTimeout(()=>{$("adminMsg").textContent=""},2500)}
-function dateBR(x){return new Date(x+"T12:00:00").toLocaleDateString("pt-BR")}
-function money(x){return Number(x||0).toFixed(2).replace(".",",")}
-function formatPhone(x){let n=String(x).replace(/\D/g,"");return n.length>=12?"("+n.slice(2,4)+") "+n.slice(4,9)+"-"+n.slice(9):n}
-function enc(x){return encodeURIComponent(x||"")}
-function encAttr(x){return encodeURIComponent(x)}
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-$("date").min=new Date().toISOString().slice(0,10);
-$("date").addEventListener("change",()=>{renderTimes();renderSummary()});
-$("service").addEventListener("change",renderSummary);
+
+function removeBooking(key){
+  let decodedKey = decodeURIComponent(key);
+  delete bookings[decodedKey];
+  delete bookings[key];
+  localStorage.setItem("gsa_bookings", JSON.stringify(bookings));
+  renderAdminBookings();
+  renderTimes();
+}
+
+function clearBookings(){
+  if(confirm("Excluir todos os agendamentos salvos neste dispositivo?")){
+    bookings = {};
+    localStorage.setItem("gsa_bookings", "{}");
+    renderAdminBookings();
+    renderTimes();
+  }
+}
+
+function msg(t){
+  $("adminMsg").textContent = t;
+  setTimeout(() => { $("adminMsg").textContent = ""; }, 2500);
+}
+
+function dateBR(x){
+  return new Date(x + "T12:00:00").toLocaleDateString("pt-BR");
+}
+
+function money(x){
+  return Number(x || 0).toFixed(2).replace(".", ",");
+}
+
+function enc(x){ return encodeURIComponent(x || ""); }
+function encAttr(x){ return encodeURIComponent(x); }
+function esc(s){
+  return String(s ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+
+$("phone").addEventListener("input", (e) => {
+  let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+  if (v.length > 10) {
+    e.target.value = "(" + v.slice(0, 2) + ") " + v.slice(2, 7) + "-" + v.slice(7);
+  } else if (v.length > 6) {
+    e.target.value = "(" + v.slice(0, 2) + ") " + v.slice(2, 6) + "-" + v.slice(6);
+  } else if (v.length > 2) {
+    e.target.value = "(" + v.slice(0, 2) + ") " + v.slice(2);
+  } else if (v.length > 0) {
+    e.target.value = "(" + v;
+  }
+});
+
+$("date").min = getLocalDateStr();
+$("date").addEventListener("change", () => { selectedTime = null; renderTimes(); renderSummary(); });
+$("service").addEventListener("change", renderSummary);
+$("category").addEventListener("change", renderSummary);
 renderAll();
 </script>
 </body>
