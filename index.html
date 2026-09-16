@@ -253,6 +253,7 @@ if (cfg.scheduleVersion !== 2) {
 }
 
 let bookings = JSON.parse(localStorage.getItem("gsa_bookings") || "{}");
+let sharedBookings = {};
 let selectedTime = null;
 
 async function loadSharedConfig(){
@@ -264,6 +265,16 @@ async function loadSharedConfig(){
     localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
   } catch(error) {
     console.warn("Usando configuração local temporariamente:", error.message);
+  }
+
+  async function loadSharedBookings(){
+    try {
+      const response = await fetch(`${API_BASE}/api/occupied-slots`, { cache: "no-store" });
+      if(!response.ok) throw new Error("Não foi possível carregar a agenda central.");
+      (await response.json()).forEach(key => { sharedBookings[key] = true; });
+    } catch(error) {
+      console.warn("Usando agenda local temporariamente:", error.message);
+    }
   }
   renderAll();
 }
@@ -392,9 +403,12 @@ function renderTimes(){
   }
   const selectedDate = new Date(date + "T12:00:00");
   const dayOfWeek = selectedDate.getDay();
+  const now = new Date();
+  const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
   const availableTimes = (cfg.times || []).filter(time => {
-    if(dayOfWeek !== 0) return true;
-    return time <= "12:00";
+    if(dayOfWeek === 0 && time > "12:00") return false;
+    if(date === getLocalDateStr() && time <= currentTime) return false;
+    return true;
   });
 
   if(!availableTimes.length){
@@ -403,7 +417,7 @@ function renderTimes(){
   }
   availableTimes.forEach(t => {
     let key = date + "_" + t;
-    let busy = !!bookings[key];
+    let busy = !!bookings[key] || !!sharedBookings[key];
     let isSelected = (selectedTime === t);
     let b = document.createElement("button");
     b.type = "button";
@@ -490,6 +504,16 @@ function getBookingData(){
   if(!selectedTime){
     alert("Por favor, clique e selecione um horário disponível.");
     return null;
+  }
+  if(date === getLocalDateStr()){
+    const now = new Date();
+    const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    if(selectedTime <= currentTime){
+      alert("Esse horário já passou. Escolha outro horário.");
+      selectedTime = null;
+      renderTimes();
+      return null;
+    }
   }
   if(!s){
     alert("Por favor, selecione uma aula.");
@@ -675,7 +699,7 @@ async function confirmPaymentBooking(){
     }
 
     const slotKey = pendingBooking.date + "_" + pendingBooking.time;
-    if(bookings[slotKey]){
+    if(bookings[slotKey] || sharedBookings[slotKey]){
       alert("Esse horário já foi reservado. Escolha outro horário.");
       pendingBooking = null;
       $("paymentStep").style.display = "none";
@@ -684,7 +708,20 @@ async function confirmPaymentBooking(){
       return;
     }
 
-    let booking = Object.assign({}, pendingBooking, {
+    const saveResponse = await fetch(`${API_BASE}/api/confirm-booking`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId: pendingBooking.bookingId })
+    });
+    const saveData = await saveResponse.json();
+    if(!saveResponse.ok) {
+      alert(saveData.error || "Não foi possível salvar o agendamento.");
+      await loadSharedBookings();
+      renderTimes();
+      return;
+    }
+
+    let booking = Object.assign({}, pendingBooking, saveData.booking, {
       created: new Date().toLocaleString("pt-BR"),
       paymentReported: true,
       paymentStatus: "approved",
@@ -692,6 +729,7 @@ async function confirmPaymentBooking(){
     });
     delete booking.key;
     bookings[slotKey] = booking;
+    sharedBookings[slotKey] = true;
     localStorage.setItem("gsa_bookings", JSON.stringify(bookings));
 
     let msg = `Olá, Gerson! O pagamento foi confirmado e gostaria de confirmar meu agendamento.%0A%0AAluno: ${enc(booking.name)}%0AWhatsApp: ${enc(booking.phone)}%0ACategoria: ${enc(booking.category)}%0AAula: ${enc(booking.service)}%0AData: ${enc(dateBR(booking.date))}%0AHorário: ${booking.time}%0AValor: R$ ${money(booking.price)}%0AStatus do pagamento: confirmado pelo Mercado Pago.%0A%0APolítica de cancelamento: em caso de desistência após o agendamento, será cobrada uma multa de R$ 50,00 sobre o pagamento realizado, e o restante será devolvido.%0AObservação: ${enc(booking.obs || "Nenhuma")}`;
@@ -812,7 +850,16 @@ function exportConfig(){
   });
 }
 
-function renderAdminBookings(){
+async function renderAdminBookings(){
+  try {
+    const response = await fetch(`${API_BASE}/api/admin-bookings`, {
+      headers: { "x-admin-password": cfg.adminPass || "1234" },
+      cache: "no-store"
+    });
+    if(response.ok) bookings = await response.json();
+  } catch(error) {
+    console.warn("Não foi possível carregar a agenda central:", error.message);
+  }
   let arr = Object.entries(bookings);
   $("adminBookings").innerHTML = arr.length
     ? arr.map(([key, b]) => `<div class="booking-row"><div><b>${esc(b.name)}</b><br><span class="muted">${esc(b.service)} • ${dateBR(b.date)} • ${esc(b.time)} • ${esc(b.phone)}</span></div><button class="btn danger" onclick="removeBooking('${encAttr(key)}')">Excluir</button></div>`).join("")
@@ -878,7 +925,11 @@ $("service").addEventListener("change", renderSummary);
 $("category").addEventListener("change", renderSummary);
 $("paymentConfirmed").addEventListener("change", updatePaymentConfirmState);
 updatePaymentConfirmState();
-loadSharedConfig().then(restorePaidBookingFromUrl);
+loadSharedConfig().then(async () => {
+  await loadSharedBookings();
+  renderAll();
+  await restorePaidBookingFromUrl();
+});
 </script>
 </body>
 </html>

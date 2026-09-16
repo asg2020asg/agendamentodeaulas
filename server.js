@@ -17,6 +17,7 @@ const allowedOrigin = process.env.FRONTEND_URL || '*';
 const bookingsById = new Map();
 const paymentStatusById = new Map();
 const siteConfigPath = path.join(__dirname, 'site-config.json');
+const bookingsPath = path.join(__dirname, 'bookings.json');
 const defaultSiteConfig = {
   phone: '5594981911783',
   pix: '',
@@ -83,6 +84,22 @@ function writeSiteConfig(config) {
   fs.writeFileSync(siteConfigPath, JSON.stringify(config, null, 2));
 }
 
+function readBookings() {
+  try {
+    if (!fs.existsSync(bookingsPath)) {
+      fs.writeFileSync(bookingsPath, '{}');
+    }
+    return JSON.parse(fs.readFileSync(bookingsPath, 'utf8'));
+  } catch (error) {
+    console.error('Erro ao ler agendamentos:', error);
+    return {};
+  }
+}
+
+function writeBookings(bookings) {
+  fs.writeFileSync(bookingsPath, JSON.stringify(bookings, null, 2));
+}
+
 function createBookingId() {
   return crypto.randomUUID();
 }
@@ -144,6 +161,45 @@ app.put('/api/site-config', (req, res) => {
   writeSiteConfig(next);
   const { adminPass, ...publicConfig } = next;
   return res.json({ saved: true, config: publicConfig });
+});
+
+app.get('/api/occupied-slots', (req, res) => {
+  return res.json(Object.keys(readBookings()));
+});
+
+app.get('/api/admin-bookings', (req, res) => {
+  const config = readSiteConfig();
+  if (req.headers['x-admin-password'] !== config.adminPass) {
+    return res.status(401).json({ error: 'Senha administrativa inválida.' });
+  }
+  return res.json(readBookings());
+});
+
+app.post('/api/confirm-booking', (req, res) => {
+  const { bookingId } = req.body || {};
+  const pending = bookingsById.get(bookingId);
+  const status = paymentStatusById.get(bookingId) || pending?.status;
+  if (!pending || status !== 'approved') {
+    return res.status(409).json({ error: 'O pagamento ainda não foi aprovado.' });
+  }
+
+  const bookings = readBookings();
+  const slotKey = `${pending.date}_${pending.time}`;
+  if (bookings[slotKey]) {
+    return res.status(409).json({ error: 'Esse horário já foi reservado.' });
+  }
+
+  const confirmed = {
+    ...pending,
+    status: 'approved',
+    paymentStatus: 'approved',
+    confirmedAt: new Date().toISOString()
+  };
+  delete confirmed.initPoint;
+  delete confirmed.sandboxInitPoint;
+  bookings[slotKey] = confirmed;
+  writeBookings(bookings);
+  return res.json({ saved: true, booking: confirmed });
 });
 
 app.post('/api/create-payment', async (req, res) => {
