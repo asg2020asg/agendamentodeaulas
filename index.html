@@ -222,7 +222,7 @@ const base = {
   pixQr: "",
   address: "Endereço a definir",
   map: "",
-  times: ["08:00","09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+  times: ["06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"],
   services: [["Aula particular - Categoria B",80],["Aula particular - Categoria A",80],["Aula particular - Categoria AB",90]],
   testimonials: [["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."]],
   gallery: defaultGallery,
@@ -239,6 +239,11 @@ if (!cfg.adminPass) cfg.adminPass = "1234";
 if (!Array.isArray(cfg.times) || cfg.times.length === 0) cfg.times = base.times.slice();
 if (!Array.isArray(cfg.services) || cfg.services.length === 0) cfg.services = base.services.slice();
 if (!Array.isArray(cfg.testimonials) || cfg.testimonials.length === 0) cfg.testimonials = base.testimonials.slice();
+if (cfg.scheduleVersion !== 2) {
+  cfg.times = base.times.slice();
+  cfg.scheduleVersion = 2;
+  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
+}
 
 let bookings = JSON.parse(localStorage.getItem("gsa_bookings") || "{}");
 let selectedTime = null;
@@ -350,11 +355,18 @@ function renderTimes(){
     $("times").innerHTML = '<p class="muted" style="margin:8px 0;width:100%">📅 Selecione uma data no campo acima para visualizar os horários disponíveis.</p>';
     return;
   }
-  if(!cfg.times || !cfg.times.length){
+  const selectedDate = new Date(date + "T12:00:00");
+  const dayOfWeek = selectedDate.getDay();
+  const availableTimes = (cfg.times || []).filter(time => {
+    if(dayOfWeek !== 0) return true;
+    return time <= "12:00";
+  });
+
+  if(!availableTimes.length){
     $("times").innerHTML = '<p class="muted" style="margin:8px 0;width:100%">Nenhum horário cadastrado. Adicione horários na área administrativa.</p>';
     return;
   }
-  cfg.times.forEach(t => {
+  availableTimes.forEach(t => {
     let key = date + "_" + t;
     let busy = !!bookings[key];
     let isSelected = (selectedTime === t);
