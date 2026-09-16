@@ -30,10 +30,11 @@ h1{font-size:clamp(39px,6vw,68px);line-height:1.02;margin:18px 0 16px;letter-spa
 section{padding:78px 0}.section-head{text-align:center;max-width:700px;margin:0 auto 38px}.section-head h2{font-size:36px;margin:0 0 10px}.section-head p{color:var(--muted);line-height:1.65}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:0 8px 28px #0714260a}.service{transition:.22s}.service:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:#9cccf4}.icon{width:46px;height:46px;border-radius:13px;background:#eaf4ff;display:grid;place-items:center;font-size:22px}.service h3{margin:18px 0 7px}.service p{color:var(--muted);font-size:14px;line-height:1.55}.service .price{font-weight:900;color:var(--blue);font-size:20px;margin:16px 0}
 .gallery{display:grid;grid-template-columns:1.4fr .8fr .8fr;grid-template-rows:220px 220px;gap:12px}.gallery div{border-radius:18px;overflow:hidden;background-position:center;background-size:cover}.g1{grid-row:1/3;background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1100&q=85')}.g2{background-image:url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=700&q=85')}.g3{background-image:url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=700&q=85')}.g4{background-image:url('https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&w=700&q=85')}.g5{background-image:url('https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=700&q=85')}
-.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.quote{font-size:15px;line-height:1.65;color:#394a5d}.person{margin-top:17px;font-weight:900}.stars{color:#e9a400;letter-spacing:2px}
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.quote{font-size:15px;line-height:1.65;color:#394a5d}.person{margin-top:17px;font-weight:900}.stars{color:#e9a400;letter-spacing:2px}.video-frame{aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#071426;margin-bottom:16px}.video-frame iframe{width:100%;height:100%;border:0}
 .booking{background:linear-gradient(135deg,#071426,#0f3e6c);color:#fff}.booking .section-head p{color:#c7ddf1}.booking-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.form-card{background:#fff;color:var(--text);border-radius:22px;padding:25px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-weight:800;font-size:13px;display:block;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:13px;background:#fff;outline:none}input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1976d218}.full{grid-column:1/-1}.times{display:flex;flex-wrap:wrap;gap:8px}.time{border:1px solid #bfdbfe;background:#eff6ff;color:#125aa0;padding:10px 13px;border-radius:10px;cursor:pointer}.time.active{background:var(--blue);color:#fff}.time.busy{background:#e5e7eb;color:#9ca3af;text-decoration:line-through;cursor:not-allowed}.summary{background:#f4f7fb;border-radius:14px;padding:14px;line-height:1.7;margin:15px 0;color:#334155}
 .location{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}.map{min-height:320px;border-radius:22px;overflow:hidden;background:linear-gradient(135deg,#dbeafe,#eff6ff);display:grid;place-items:center;color:#2563eb;font-size:70px}.location-info{padding:28px}.location-info p{color:var(--muted);line-height:1.7}.pill{display:inline-block;background:#eaf4ff;color:#1260a5;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900}
 footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer-brand{color:#fff;font-weight:900;font-size:18px}.float-wa{position:fixed;right:18px;bottom:18px;width:58px;height:58px;border-radius:50%;background:#16a34a;color:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 10px 30px #0004;z-index:20}.admin{display:none}.admin.open{display:block}.admin-wrap{background:#fff;border-radius:22px;padding:25px;margin-top:18px}.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.tab{background:#eef2f7;border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:800}.tab.active{background:var(--navy);color:#fff}.admin-panel{display:none}.admin-panel.active{display:block}.admin-list{display:grid;gap:10px}.booking-row{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--border);border-radius:13px;padding:13px}.danger{background:#fee2e2;color:#b91c1c}.notice{padding:12px;border-radius:12px;background:#eff6ff;color:#174b78;font-size:13px}.muted{color:var(--muted);font-size:13px}
+.payment-modal{position:fixed;inset:0;background:#071426aa;display:none;align-items:center;justify-content:center;padding:16px;z-index:40}.payment-modal.open{display:flex}.payment-dialog{width:min(470px,100%);max-height:90vh;overflow:auto;background:#fff;color:var(--text);border-radius:22px;padding:24px;box-shadow:0 25px 80px #0005;position:relative}.payment-close{position:absolute;right:16px;top:12px;border:0;background:transparent;font-size:25px;cursor:pointer;color:var(--muted)}.payment-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.payment-method{border:1px solid var(--border);border-radius:12px;background:#f8fafc;padding:13px;cursor:pointer;font-weight:800}.payment-method.active{border-color:var(--blue);background:#eff6ff;color:#125aa0}.payment-panel{display:none}.payment-panel.active{display:block}.pix-qr{display:block;width:min(240px,100%);aspect-ratio:1;object-fit:contain;margin:16px auto;border:1px solid var(--border);border-radius:12px}.pix-key{display:flex;gap:8px}.pix-key input{min-width:0}.pix-key button{border:0;border-radius:10px;background:var(--blue);color:#fff;padding:0 13px;cursor:pointer;font-weight:800}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @media(max-width:850px){.navlinks{display:none}.hero,.booking-grid,.location{grid-template-columns:1fr}.hero-photo{height:300px}.cards,.testimonials{grid-template-columns:1fr}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:200px 200px 200px}.g1{grid-row:auto;grid-column:1/3}.statsbox{grid-template-columns:1fr}.stat{border-right:0;border-bottom:1px solid var(--border)}.stat:last-child{border:0}}
 @media(max-width:560px){.container{width:min(100% - 22px,1120px)}section{padding:58px 0}.grid{grid-template-columns:1fr}.full{grid-column:auto}.gallery{display:grid;grid-template-columns:1fr 1fr}.g1{grid-column:1/3}.hero{padding-top:35px}h1{letter-spacing:-1px}}
@@ -92,14 +93,14 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 
 <section id="depoimentos" style="background:#fff">
 <div class="container">
-<div class="section-head"><span class="pill">DEPOIMENTOS</span><h2>Experiências dos alunos</h2><p>Área editável para você cadastrar depoimentos reais de clientes.</p></div>
+<div class="section-head"><span class="pill">DEPOIMENTOS</span><h2>Experiências dos alunos</h2><p>Assista aos relatos dos alunos sem sair do site.</p></div>
 <div id="testimonialCards" class="testimonials"></div>
 </div>
 </section>
 
 <section class="booking" id="agendar">
 <div class="container">
-<div class="section-head"><span class="pill">AGENDE ONLINE</span><h2>Marque sua aula particular</h2><p>Escolha o serviço, a data e o horário. Depois, envie a solicitação pelo WhatsApp.</p></div>
+<div class="section-head"><span class="pill">AGENDE ONLINE</span><h2>Marque sua aula particular</h2><p>Escolha o serviço, faça o pagamento e envie a confirmação pelo WhatsApp.</p></div>
 <div class="booking-grid">
 <div class="form-card">
 <h2 style="margin-top:0">Seu agendamento</h2>
@@ -113,13 +114,17 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div class="full"><label>Observação</label><textarea id="obs" rows="3" placeholder="Alguma informação para o instrutor?"></textarea></div>
 </div>
 <div id="summary" class="summary">Selecione uma aula, data e horário.</div>
-<div id="depositInfo"></div>
-<button class="btn btn-blue" style="width:100%" onclick="confirmBooking()">📲 Enviar agendamento pelo WhatsApp</button>
+<div class="notice" style="margin:15px 0;background:#fff7ed;color:#92400e;border:1px solid #fed7aa">⚠️ <b>Política de cancelamento:</b> em caso de desistência após o agendamento, será cobrada uma taxa de <b>R$ 50,00</b> sobre o valor pago, e o restante será devolvido.</div>
+<button class="btn btn-blue" style="width:100%" onclick="startPayment()">💳 Continuar para pagamento</button>
+<div id="paymentStep" style="display:none;margin-top:15px">
+<div class="notice">💳 <b>Pagamento:</b> a janela de pagamento foi aberta. Depois de pagar, confirme para enviar o agendamento pelo WhatsApp.</div>
+<p id="paymentInstructions" class="muted"></p>
+</div>
 </div>
 <div class="card" style="background:#0b2440;color:#fff;border:1px solid #ffffff14">
 <h2>Agendamento simples e organizado</h2>
 <p style="color:#c7ddf1;line-height:1.7">Os horários configurados pelo responsável aparecem aqui. Depois que um horário for reservado, ele fica marcado neste dispositivo.</p>
-<div class="notice">💳 <b>Sinal:</b> o valor do sinal e o link/Pix podem ser configurados na área administrativa.</div>
+<div class="notice">⚠️ <b>Política de cancelamento:</b> após o agendamento, em caso de desistência, será cobrada uma multa de <b>R$ 50,00</b> sobre o pagamento realizado, e o restante será devolvido.</div>
 <br><div class="notice">📌 <b>Importante:</b> a confirmação definitiva pode ser feita pelo responsável diretamente no WhatsApp.</div>
 </div>
 </div>
@@ -138,7 +143,7 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 
 <section>
 <div class="container">
-<div class="section-head"><span class="pill">ÁREA RESTRITA</span><h2>Administração</h2><p>Gerencie agenda, serviços, preços, sinal, contato e depoimentos.</p></div>
+<div class="section-head"><span class="pill">ÁREA RESTRITA</span><h2>Administração</h2><p>Gerencie agenda, serviços, preços, contato e depoimentos.</p></div>
 <div style="text-align:center"><button class="btn btn-blue" onclick="openAdmin()">🔐 Entrar na área administrativa</button></div>
 <div id="admin" class="admin">
 <div class="admin-wrap">
@@ -153,9 +158,9 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div id="tab-config" class="admin-panel">
 <div class="grid">
 <div><label>WhatsApp (somente números)</label><input id="cfgPhone"></div>
-<div><label>Valor do sinal (R$)</label><input id="cfgDeposit" type="number" step=".01"></div>
-<div><label>Chave Pix</label><input id="cfgPix"></div>
-<div><label>Link para pagamento</label><input id="cfgPay"></div>
+<div><label>Link para pagamento</label><input id="cfgPay" placeholder="https://..."></div>
+<div class="full"><label>Chave Pix para pagamento</label><input id="cfgPix"></div>
+<div class="full"><label>Link da imagem do QR Code Pix</label><input id="cfgPixQr" placeholder="https://.../qrcode.png"></div>
 <div class="full"><label>Endereço/local de atendimento</label><input id="cfgAddress"></div>
 <div class="full"><label>Link do Google Maps</label><input id="cfgMap"></div>
 <div class="full"><label>Horários disponíveis (separados por vírgula)</label><input id="cfgTimes" placeholder="Ex: 08:00, 09:00, 10:00, 14:00, 15:00"></div>
@@ -163,7 +168,7 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 </div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button><button class="btn btn-ghost" style="color:var(--text);border-color:#cbd5e1;margin-left:8px" onclick="exportConfig()">📋 Copiar código base</button>
 </div>
 <div id="tab-servicos" class="admin-panel"><label>Serviços: nome|preço;nome|preço</label><textarea id="cfgServices" rows="3" placeholder="Aula particular B|80; Aula para habilitados|90"></textarea><p class="muted">Exemplo: Aula particular B|80; Aula para habilitados|90</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
-<div id="tab-depo" class="admin-panel"><label>Depoimentos: nome|texto;nome|texto</label><textarea id="cfgTestimonials" rows="7"></textarea><br><br><button class="btn btn-blue" onclick="saveTestimonials()">Salvar depoimentos</button></div>
+<div id="tab-depo" class="admin-panel"><label>Depoimentos: nome|texto|link do vídeo</label><textarea id="cfgTestimonials" rows="7"></textarea><p class="muted">Um por linha. Use o link de cada vídeo do YouTube, inclusive vídeos não listados. Exemplo: Maria|Gostei muito da aula!|https://youtu.be/ID_DO_VIDEO</p><button class="btn btn-blue" onclick="saveTestimonials()">Salvar depoimentos</button></div>
 <div id="tab-fotos" class="admin-panel"><label>Fotos da galeria (1 link por linha, até 5 imagens)</label><textarea id="cfgGallery" rows="6" placeholder="https://imagem1.jpg&#10;https://imagem2.jpg"></textarea><br><br><button class="btn btn-blue" onclick="saveGallery()">Salvar fotos</button></div>
 <p id="adminMsg" class="muted"></p>
 </div>
@@ -173,6 +178,35 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 
 <footer><div class="container"><div class="footer-brand">Gerson Santana Aguiar</div><p>Aulas particulares de autoescola • Agendamento online</p></div></footer>
 <a id="floatWa" class="float-wa" href="#" target="_blank" aria-label="WhatsApp">💬</a>
+<div id="paymentModal" class="payment-modal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+<div class="payment-dialog">
+<button class="payment-close" type="button" onclick="closePaymentModal()" aria-label="Fechar">×</button>
+<h2 id="paymentTitle" style="margin-top:0">Escolha como pagar</h2>
+<p id="paymentAmount" class="muted"></p>
+<div class="payment-methods">
+<button id="pixMethod" class="payment-method active" type="button" onclick="showPaymentMethod('pix')">📱 Pix</button>
+<button id="cardMethod" class="payment-method" type="button" onclick="showPaymentMethod('card')">💳 Cartão</button>
+</div>
+<div id="pixPanel" class="payment-panel active">
+<p class="muted">Escaneie o QR Code ou copie a chave Pix abaixo.</p>
+<img id="pixQr" class="pix-qr" alt="QR Code para pagamento via Pix">
+<div id="pixUnavailable" class="notice" style="display:none">O QR Code Pix ainda não foi configurado pelo responsável.</div>
+<div id="pixKeyBox" class="pix-key">
+<input id="pixKeyValue" readonly aria-label="Chave Pix">
+<button type="button" onclick="copyPixKey()">Copiar</button>
+</div>
+</div>
+<div id="cardPanel" class="payment-panel">
+<div class="notice">O pagamento com cartão será feito em um checkout seguro. Os dados do cartão não são armazenados neste site.</div>
+<a id="cardPaymentLink" class="btn btn-blue" href="#" target="_blank" rel="noopener" style="width:100%;margin-top:14px">💳 Pagar com cartão</a>
+</div>
+<label style="display:flex;align-items:flex-start;gap:10px;margin-top:16px;font-weight:700;color:var(--text)">
+<input id="paymentConfirmed" type="checkbox" style="margin-top:3px;width:18px;height:18px">
+<span>Confirmo que o pagamento foi realizado e quero finalizar o agendamento.</span>
+</label>
+<button id="confirmPaymentButton" class="btn btn-green" style="width:100%;margin-top:18px;opacity:.55;cursor:not-allowed" type="button" onclick="confirmPaymentBooking()" disabled>✅ Já realizei o pagamento</button>
+</div>
+</div>
 
 <script>
 const defaultGallery = [
@@ -185,9 +219,9 @@ const defaultGallery = [
 
 const base = {
   phone: "5594981911783",
-  deposit: 0,
-  pix: "",
   pay: "",
+  pix: "",
+  pixQr: "",
   address: "Endereço a definir",
   map: "",
   times: ["08:00","09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
@@ -248,10 +282,38 @@ function selectService(i){
   renderSummary();
 }
 
+function youtubeEmbedUrl(value){
+  if(!value) return "";
+  try{
+    let url = new URL(String(value).trim());
+    let host = url.hostname.toLowerCase().replace(/^www\./, "");
+    let id = "";
+    if(host === "youtu.be"){
+      id = url.pathname.split("/").filter(Boolean)[0] || "";
+    } else if(host === "youtube.com" || host === "m.youtube.com"){
+      if(url.pathname === "/watch") id = url.searchParams.get("v") || "";
+      if(url.pathname.startsWith("/shorts/") || url.pathname.startsWith("/embed/")){
+        id = url.pathname.split("/")[2] || "";
+      }
+    }
+    return /^[A-Za-z0-9_-]{11}$/.test(id)
+      ? "https://www.youtube.com/embed/" + id + "?rel=0"
+      : "";
+  } catch(error){
+    return "";
+  }
+}
+
 function renderAll(){
   $("service").innerHTML = cfg.services.map((s, i) => `<option value="${i}">${esc(s[0])} — R$ ${money(s[1])}</option>`).join("");
   $("serviceCards").innerHTML = cfg.services.map((s, i) => `<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3><p>Aula individual com acompanhamento personalizado.</p><div class="price">R$ ${money(s[1])}</div><a class="btn btn-blue" href="#agendar" onclick="selectService(${i})">Escolher esta aula</a></div>`).join("");
-  $("testimonialCards").innerHTML = cfg.testimonials.map(t => `<div class="card"><div class="stars">★★★★★</div><p class="quote">“${esc(t[1])}”</p><div class="person">${esc(t[0])}</div></div>`).join("");
+  $("testimonialCards").innerHTML = cfg.testimonials.map(t => {
+    let embedUrl = youtubeEmbedUrl(t[2]);
+    let video = embedUrl
+      ? `<div class="video-frame"><iframe src="${embedUrl}" title="Vídeo de depoimento de ${esc(t[0])}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`
+      : "";
+    return `<div class="card">${video}<div class="stars">★★★★★</div><p class="quote">“${esc(t[1])}”</p><div class="person">${esc(t[0])}</div></div>`;
+  }).join("");
   $("displayPhone").textContent = cfg.phone ? formatPhone(cfg.phone) : "Configurar";
   $("address").textContent = cfg.address || "Endereço a definir";
   $("mapLink").href = cfg.map || (cfg.address ? "https://maps.google.com/?q=" + encodeURIComponent(cfg.address) : "#");
@@ -265,16 +327,18 @@ function renderAll(){
   }
 
   $("cfgPhone").value = cfg.phone || "";
-  $("cfgDeposit").value = cfg.deposit || 0;
-  $("cfgPix").value = cfg.pix || "";
   $("cfgPay").value = cfg.pay || "";
+  $("cfgPix").value = cfg.pix || "";
+  $("cfgPixQr").value = cfg.pixQr || "";
   $("cfgAddress").value = cfg.address || "";
   $("cfgMap").value = cfg.map || "";
   $("cfgTimes").value = (cfg.times || []).join(", ");
   $("cfgAdminPass").value = "";
   $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1]).join("; ");
-  $("cfgTestimonials").value = (cfg.testimonials || []).map(t => t[0] + "|" + t[1]).join("; ");
+  $("cfgTestimonials").value = (cfg.testimonials || []).map(t => [t[0], t[1], t[2] || ""].join("|")).join("\n");
   $("cfgGallery").value = gall.join("\n");
+  $("paymentConfirmed").checked = false;
+  updatePaymentConfirmState();
 
   renderTimes();
   renderSummary();
@@ -319,11 +383,37 @@ function renderSummary(){
     return;
   }
   let cat = $("category").value || "B";
-  $("summary").innerHTML = `<b>Aula:</b> ${esc(s[0])}<br><b>Categoria:</b> ${esc(cat)}<br><b>Data:</b> ${dateBR($("date").value)}<br><b>Horário:</b> ${selectedTime}<br><b>Valor:</b> R$ ${money(s[1])}<br><b>Sinal:</b> R$ ${money(cfg.deposit)}`;
-  $("depositInfo").innerHTML = Number(cfg.deposit) > 0 ? `<p class="muted">Sinal configurado: <b>R$ ${money(cfg.deposit)}</b>${cfg.pix ? " • Pix disponível após o envio." : ""}</p>` : "";
+  $("summary").innerHTML = `<b>Aula:</b> ${esc(s[0])}<br><b>Categoria:</b> ${esc(cat)}<br><b>Data:</b> ${dateBR($("date").value)}<br><b>Horário:</b> ${selectedTime}<br><b>Valor:</b> R$ ${money(s[1])}`;
 }
 
-function confirmBooking(){
+const API_BASE = (location.protocol === 'file:' ? 'http://localhost:3000' : window.location.origin || '');
+
+if (location.protocol === 'file:') {
+  console.warn('Site aberto via file://. Redirecionando para a API local do servidor para o fluxo de pagamento funcionar.');
+  window.location.replace('http://localhost:3000/');
+}
+
+let pendingBooking = null;
+
+async function restorePaidBookingFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const bookingId = params.get("bookingId");
+  if (params.get("paid") !== "1" || !bookingId) {
+    return;
+  }
+
+  const stored = JSON.parse(localStorage.getItem("gsa_pending_payment") || "null");
+  if (!stored || stored.bookingId !== bookingId) {
+    return;
+  }
+
+  pendingBooking = Object.assign({}, stored.bookingData, { bookingId: stored.bookingId, status: "approved" });
+  const originalPath = window.location.pathname;
+  window.history.replaceState({}, document.title, originalPath);
+  await confirmPaymentBooking();
+}
+
+function getBookingData(){
   let i = Number($("service").value || 0);
   let s = cfg.services[i];
   let name = $("name").value.trim();
@@ -334,56 +424,204 @@ function confirmBooking(){
   if(!name || name.length < 3){
     alert("Por favor, preencha seu nome completo.");
     $("name").focus();
-    return;
+    return null;
   }
   if(!phone || phoneDigits.length < 10){
     alert("Por favor, informe um número de WhatsApp válido com DDD.");
     $("phone").focus();
-    return;
+    return null;
   }
   if(!date){
     alert("Por favor, selecione a data da aula.");
     $("date").focus();
-    return;
+    return null;
   }
   let todayStr = getLocalDateStr();
   if(date < todayStr){
     alert("A data da aula não pode ser anterior a hoje.");
     $("date").focus();
-    return;
+    return null;
   }
   if(!selectedTime){
     alert("Por favor, clique e selecione um horário disponível.");
-    return;
+    return null;
   }
   if(!s){
     alert("Por favor, selecione uma aula.");
-    return;
+    return null;
   }
 
   let key = date + "_" + selectedTime;
   if(bookings[key]){
     alert("Esse horário já está ocupado. Por favor, escolha outro.");
     renderTimes();
-    return;
+    return null;
   }
 
-  bookings[key] = {
+  return {
     name,
     phone,
     service: s[0],
+    price: s[1],
     date,
     time: selectedTime,
     category: $("category").value,
     obs: $("obs").value,
-    created: new Date().toLocaleString("pt-BR")
+    key
   };
-  localStorage.setItem("gsa_bookings", JSON.stringify(bookings));
+}
 
-  let msg = `Olá, Gerson! Gostaria de agendar uma aula particular.%0A%0AAluno: ${enc(name)}%0AWhatsApp: ${enc(phone)}%0ACategoria: ${$("category").value}%0AAula: ${enc(s[0])}%0AData: ${enc(dateBR(date))}%0AHorário: ${selectedTime}%0AValor: R$ ${money(s[1])}%0ASinal: R$ ${money(cfg.deposit)}%0AObservação: ${enc($("obs").value || "Nenhuma")}`;
-  window.open(waLink() + "?text=" + msg, "_blank");
-  renderTimes();
-  renderAdminBookings();
+function startPayment(){
+  let data = getBookingData();
+  if(!data) return;
+
+  const bookingPayload = {
+    name: $("name").value.trim(),
+    phone: $("phone").value.trim(),
+    service: cfg.services[Number($("service").value || 0)][0],
+    category: $("category").value,
+    title: cfg.services[Number($("service").value || 0)][0],
+    amount: Number(cfg.services[Number($("service").value || 0)][1] || 0),
+    date: $("date").value,
+    time: selectedTime,
+    obs: $("obs").value.trim(),
+    email: ""
+  };
+
+  pendingBooking = Object.assign({}, data, { bookingId: null, status: "pending" });
+  $("paymentStep").style.display = "block";
+  $("paymentInstructions").textContent = "Gerando o pagamento seguro no Mercado Pago...";
+  $("paymentStep").scrollIntoView({behavior:"smooth", block:"nearest"});
+  $("paymentAmount").textContent = `Valor: R$ ${money(data.price)}`;
+  $("paymentConfirmed").checked = false;
+  updatePaymentConfirmState();
+  $("paymentModal").classList.add("open");
+
+  fetch(`${API_BASE}/api/create-payment`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(bookingPayload)
+  }).then(async response => {
+    const json = await response.json();
+    if(!response.ok) {
+      throw new Error(json.error || "Não foi possível iniciar o pagamento.");
+    }
+
+    pendingBooking.bookingId = json.bookingId;
+    localStorage.setItem("gsa_pending_payment", JSON.stringify({
+      bookingId: json.bookingId,
+      createdAt: Date.now(),
+      bookingData: Object.assign({}, pendingBooking)
+    }));
+
+    $("paymentInstructions").textContent = `Pagamento em andamento. Confirme o pagamento na janela do Mercado Pago e, após aprovado, clique em "Continuar".`;
+    $("paymentModal").classList.add("open");
+    showPaymentMethod("card");
+    $("cardPaymentLink").href = json.initPoint || json.sandboxInitPoint || "#";
+    $("cardPaymentLink").style.display = json.initPoint ? "inline-flex" : "none";
+
+    let paymentWindow = window.open(json.initPoint || json.sandboxInitPoint || "#", "_blank", "width=430,height=760,noopener,noreferrer");
+    if(!paymentWindow) {
+      alert("Seu navegador bloqueou a janela de pagamento. Permita pop-ups para continuar.");
+      $("cardPaymentLink").style.display = "inline-flex";
+      $("cardPaymentLink").textContent = "Abrir checkout do Mercado Pago";
+      return;
+    }
+
+    $("confirmPaymentButton").disabled = false;
+    $("confirmPaymentButton").style.opacity = "1";
+    $("confirmPaymentButton").style.cursor = "pointer";
+    $("confirmPaymentButton").textContent = "✅ Confirmar pagamento e continuar";
+  }).catch(error => {
+    console.error(error);
+    alert(error.message || "Não foi possível iniciar o pagamento no Mercado Pago.");
+    pendingBooking = null;
+    $("paymentStep").style.display = "none";
+    closePaymentModal();
+  });
+}
+
+function showPaymentMethod(method){
+  $("pixMethod").classList.toggle("active", method === "pix");
+  $("cardMethod").classList.toggle("active", method === "card");
+  $("pixPanel").classList.toggle("active", method === "pix");
+  $("cardPanel").classList.toggle("active", method === "card");
+}
+
+function closePaymentModal(){
+  $("paymentModal").classList.remove("open");
+}
+
+function copyPixKey(){
+  navigator.clipboard.writeText($("pixKeyValue").value).then(() => {
+    alert("Chave Pix copiada.");
+  }).catch(() => {
+    $("pixKeyValue").select();
+    alert("Copie a chave Pix selecionada.");
+  });
+}
+
+function updatePaymentConfirmState(){
+  let shouldEnable = !!pendingBooking && !!pendingBooking.bookingId;
+  $("confirmPaymentButton").disabled = !shouldEnable;
+  $("confirmPaymentButton").style.opacity = shouldEnable ? "1" : ".55";
+  $("confirmPaymentButton").style.cursor = shouldEnable ? "pointer" : "not-allowed";
+}
+
+async function confirmPaymentBooking(){
+  if(!pendingBooking || !pendingBooking.bookingId){
+    alert("Inicie o pagamento antes de confirmar o agendamento.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/api/booking-status?bookingId=${encodeURIComponent(pendingBooking.bookingId)}`);
+    const statusData = await response.json();
+
+    if(!response.ok || statusData.status !== "approved"){
+      alert("O pagamento ainda não foi confirmado pelo Mercado Pago. Complete o pagamento antes de enviar o agendamento.");
+      return;
+    }
+
+    const slotKey = pendingBooking.date + "_" + pendingBooking.time;
+    if(bookings[slotKey]){
+      alert("Esse horário já foi reservado. Escolha outro horário.");
+      pendingBooking = null;
+      $("paymentStep").style.display = "none";
+      closePaymentModal();
+      renderTimes();
+      return;
+    }
+
+    let booking = Object.assign({}, pendingBooking, {
+      created: new Date().toLocaleString("pt-BR"),
+      paymentReported: true,
+      paymentStatus: "approved",
+      bookingId: pendingBooking.bookingId
+    });
+    delete booking.key;
+    bookings[slotKey] = booking;
+    localStorage.setItem("gsa_bookings", JSON.stringify(bookings));
+
+    let msg = `Olá, Gerson! O pagamento foi confirmado e gostaria de confirmar meu agendamento.%0A%0AAluno: ${enc(booking.name)}%0AWhatsApp: ${enc(booking.phone)}%0ACategoria: ${enc(booking.category)}%0AAula: ${enc(booking.service)}%0AData: ${enc(dateBR(booking.date))}%0AHorário: ${booking.time}%0AValor: R$ ${money(booking.price)}%0AStatus do pagamento: confirmado pelo Mercado Pago.%0A%0APolítica de cancelamento: em caso de desistência após o agendamento, será cobrada uma multa de R$ 50,00 sobre o pagamento realizado, e o restante será devolvido.%0AObservação: ${enc(booking.obs || "Nenhuma")}`;
+
+    window.open(waLink() + "?text=" + msg, "_blank");
+    localStorage.removeItem("gsa_pending_payment");
+    pendingBooking = null;
+    $("paymentStep").style.display = "none";
+    closePaymentModal();
+    $("paymentConfirmed").checked = false;
+    $("confirmPaymentButton").disabled = true;
+    $("confirmPaymentButton").style.opacity = ".55";
+    $("confirmPaymentButton").style.cursor = "not-allowed";
+    $("confirmPaymentButton").textContent = "✅ Já realizei o pagamento";
+    updatePaymentConfirmState();
+    renderTimes();
+    renderAdminBookings();
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível verificar o pagamento. Tente novamente ou aguarde a confirmação do Mercado Pago.");
+  }
 }
 
 function openAdmin(){
@@ -407,9 +645,9 @@ function showTab(name, el){
 
 function saveConfig(){
   cfg.phone = $("cfgPhone").value.replace(/\D/g, "") || "5594981911783";
-  cfg.deposit = Number(String($("cfgDeposit").value || "0").replace(",", ".")) || 0;
-  cfg.pix = $("cfgPix").value;
-  cfg.pay = $("cfgPay").value;
+  cfg.pay = $("cfgPay").value.trim();
+  cfg.pix = $("cfgPix").value.trim();
+  cfg.pixQr = $("cfgPixQr").value.trim();
   cfg.address = $("cfgAddress").value;
   cfg.map = $("cfgMap").value;
   let parsedTimes = $("cfgTimes").value.split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
@@ -440,7 +678,10 @@ function saveServices(){
 function saveTestimonials(){
   let parsed = $("cfgTestimonials").value.split(/[;\n]+/).map(x => {
     let a = x.split("|");
-    return [a[0].trim(), a.slice(1).join("|").trim()];
+    let possibleVideo = a.length > 2 ? a[a.length - 1].trim() : "";
+    let video = youtubeEmbedUrl(possibleVideo) ? possibleVideo : "";
+    let textParts = video ? a.slice(1, -1) : a.slice(1);
+    return [a[0].trim(), textParts.join("|").trim(), video];
   }).filter(x => x && x[0] && x[1]);
   cfg.testimonials = parsed.length ? parsed : base.testimonials.slice();
   localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
@@ -530,7 +771,10 @@ if (!$("date").value) {
 $("date").addEventListener("change", () => { selectedTime = null; renderTimes(); renderSummary(); });
 $("service").addEventListener("change", renderSummary);
 $("category").addEventListener("change", renderSummary);
+$("paymentConfirmed").addEventListener("change", updatePaymentConfirmState);
+updatePaymentConfirmState();
 renderAll();
+restorePaidBookingFromUrl();
 </script>
 </body>
 </html>
