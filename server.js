@@ -175,6 +175,29 @@ app.get('/api/admin-bookings', (req, res) => {
   return res.json(readBookings());
 });
 
+app.delete('/api/admin-bookings/:slotKey', (req, res) => {
+  const config = readSiteConfig();
+  if (req.headers['x-admin-password'] !== config.adminPass) {
+    return res.status(401).json({ error: 'Senha administrativa inválida.' });
+  }
+  const bookings = readBookings();
+  if (!bookings[req.params.slotKey]) {
+    return res.status(404).json({ error: 'Agendamento não encontrado.' });
+  }
+  delete bookings[req.params.slotKey];
+  writeBookings(bookings);
+  return res.json({ deleted: true });
+});
+
+app.delete('/api/admin-bookings', (req, res) => {
+  const config = readSiteConfig();
+  if (req.headers['x-admin-password'] !== config.adminPass) {
+    return res.status(401).json({ error: 'Senha administrativa inválida.' });
+  }
+  writeBookings({});
+  return res.json({ deleted: true });
+});
+
 app.post('/api/confirm-booking', (req, res) => {
   const { bookingId } = req.body || {};
   const pending = bookingsById.get(bookingId);

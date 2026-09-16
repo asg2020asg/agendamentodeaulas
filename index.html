@@ -589,14 +589,6 @@ function startPayment(){
     $("cardPaymentLink").href = json.initPoint || json.sandboxInitPoint || "#";
     $("cardPaymentLink").style.display = json.initPoint ? "inline-flex" : "none";
 
-    let paymentWindow = window.open(json.initPoint || json.sandboxInitPoint || "#", "_blank", "width=430,height=760,noopener,noreferrer");
-    if(!paymentWindow) {
-      alert("Seu navegador bloqueou a janela de pagamento. Permita pop-ups para continuar.");
-      $("cardPaymentLink").style.display = "inline-flex";
-      $("cardPaymentLink").textContent = "Abrir checkout do Mercado Pago";
-      return;
-    }
-
     $("confirmPaymentButton").disabled = false;
     $("confirmPaymentButton").style.opacity = "1";
     $("confirmPaymentButton").style.cursor = "pointer";
@@ -866,21 +858,43 @@ async function renderAdminBookings(){
     : "<div class='notice'>Nenhum agendamento neste dispositivo.</div>";
 }
 
-function removeBooking(key){
+async function removeBooking(key){
   let decodedKey = decodeURIComponent(key);
-  delete bookings[decodedKey];
-  delete bookings[key];
-  localStorage.setItem("gsa_bookings", JSON.stringify(bookings));
-  renderAdminBookings();
-  renderTimes();
+  try {
+    const response = await fetch(`${API_BASE}/api/admin-bookings/${encodeURIComponent(decodedKey)}`, {
+      method: "DELETE",
+      headers: { "x-admin-password": cfg.adminPass || "1234" }
+    });
+    const data = await response.json();
+    if(!response.ok) throw new Error(data.error || "Não foi possível excluir o agendamento.");
+    delete bookings[decodedKey];
+    delete sharedBookings[decodedKey];
+    localStorage.setItem("gsa_bookings", JSON.stringify(bookings));
+    await renderAdminBookings();
+    renderTimes();
+    msg("Agendamento excluído.");
+  } catch(error) {
+    alert(error.message);
+  }
 }
 
-function clearBookings(){
+async function clearBookings(){
   if(confirm("Excluir todos os agendamentos salvos neste dispositivo?")){
-    bookings = {};
-    localStorage.setItem("gsa_bookings", "{}");
-    renderAdminBookings();
-    renderTimes();
+    try {
+      const response = await fetch(`${API_BASE}/api/admin-bookings`, {
+        method: "DELETE",
+        headers: { "x-admin-password": cfg.adminPass || "1234" }
+      });
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || "Não foi possível limpar a agenda.");
+      bookings = {};
+      sharedBookings = {};
+      localStorage.setItem("gsa_bookings", "{}");
+      await renderAdminBookings();
+      renderTimes();
+    } catch(error) {
+      alert(error.message);
+    }
   }
 }
 
