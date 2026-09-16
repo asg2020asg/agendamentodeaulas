@@ -52,7 +52,7 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <span class="kicker">AULAS PARTICULARES DE AUTOESCOLA</span>
 <h1>Mais confiança para assumir o volante.</h1>
 <p>Aulas individuais para quem quer praticar direção, ganhar segurança e se preparar melhor para seus objetivos ao volante.</p>
-<div class="actions"><a class="btn btn-primary" href="#agendar">📅 Agendar minha aula</a><a class="btn btn-ghost" id="heroWhats" href="#">💬 Falar no WhatsApp</a></div>
+<div class="actions"><a class="btn btn-primary" href="#agendar">📅 Agendar minha aula</a><a class="btn btn-ghost" id="heroWhats" href="#" target="_blank">💬 Falar no WhatsApp</a></div>
 </div>
 <div class="hero-photo" aria-label="Carro para aulas de direção"></div>
 </div>
@@ -158,11 +158,11 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div><label>Link para pagamento</label><input id="cfgPay"></div>
 <div class="full"><label>Endereço/local de atendimento</label><input id="cfgAddress"></div>
 <div class="full"><label>Link do Google Maps</label><input id="cfgMap"></div>
-<div class="full"><label>Horários separados por vírgula</label><input id="cfgTimes"></div>
+<div class="full"><label>Horários disponíveis (separados por vírgula)</label><input id="cfgTimes" placeholder="Ex: 08:00, 09:00, 10:00, 14:00, 15:00"></div>
 <div class="full"><label>Nova senha administrativa</label><input id="cfgAdminPass" type="password" placeholder="Deixe em branco para manter atual"></div>
 </div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button><button class="btn btn-ghost" style="color:var(--text);border-color:#cbd5e1;margin-left:8px" onclick="exportConfig()">📋 Copiar código base</button>
 </div>
-<div id="tab-servicos" class="admin-panel"><label>Serviços: nome|preço;nome|preço</label><input id="cfgServices"><p class="muted">Exemplo: Aula particular B|80;Aula para habilitados|90</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
+<div id="tab-servicos" class="admin-panel"><label>Serviços: nome|preço;nome|preço</label><textarea id="cfgServices" rows="3" placeholder="Aula particular B|80; Aula para habilitados|90"></textarea><p class="muted">Exemplo: Aula particular B|80; Aula para habilitados|90</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
 <div id="tab-depo" class="admin-panel"><label>Depoimentos: nome|texto;nome|texto</label><textarea id="cfgTestimonials" rows="7"></textarea><br><br><button class="btn btn-blue" onclick="saveTestimonials()">Salvar depoimentos</button></div>
 <div id="tab-fotos" class="admin-panel"><label>Fotos da galeria (1 link por linha, até 5 imagens)</label><textarea id="cfgGallery" rows="6" placeholder="https://imagem1.jpg&#10;https://imagem2.jpg"></textarea><br><br><button class="btn btn-blue" onclick="saveGallery()">Salvar fotos</button></div>
 <p id="adminMsg" class="muted"></p>
@@ -204,6 +204,9 @@ if (!cfg || cfg.phone === "5519999999999" || !cfg.phone) {
 }
 if (!cfg.gallery || !cfg.gallery.length) cfg.gallery = defaultGallery;
 if (!cfg.adminPass) cfg.adminPass = "1234";
+if (!Array.isArray(cfg.times) || cfg.times.length === 0) cfg.times = base.times.slice();
+if (!Array.isArray(cfg.services) || cfg.services.length === 0) cfg.services = base.services.slice();
+if (!Array.isArray(cfg.testimonials) || cfg.testimonials.length === 0) cfg.testimonials = base.testimonials.slice();
 
 let bookings = JSON.parse(localStorage.getItem("gsa_bookings") || "{}");
 let selectedTime = null;
@@ -240,13 +243,18 @@ function formatPhone(x){
   return n || "Configurar";
 }
 
+function selectService(i){
+  $("service").value = i;
+  renderSummary();
+}
+
 function renderAll(){
   $("service").innerHTML = cfg.services.map((s, i) => `<option value="${i}">${esc(s[0])} — R$ ${money(s[1])}</option>`).join("");
-  $("serviceCards").innerHTML = cfg.services.map(s => `<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3><p>Aula individual com acompanhamento personalizado.</p><div class="price">R$ ${money(s[1])}</div><a class="btn btn-blue" href="#agendar">Escolher esta aula</a></div>`).join("");
+  $("serviceCards").innerHTML = cfg.services.map((s, i) => `<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3><p>Aula individual com acompanhamento personalizado.</p><div class="price">R$ ${money(s[1])}</div><a class="btn btn-blue" href="#agendar" onclick="selectService(${i})">Escolher esta aula</a></div>`).join("");
   $("testimonialCards").innerHTML = cfg.testimonials.map(t => `<div class="card"><div class="stars">★★★★★</div><p class="quote">“${esc(t[1])}”</p><div class="person">${esc(t[0])}</div></div>`).join("");
   $("displayPhone").textContent = cfg.phone ? formatPhone(cfg.phone) : "Configurar";
   $("address").textContent = cfg.address || "Endereço a definir";
-  $("mapLink").href = cfg.map || "#";
+  $("mapLink").href = cfg.map || (cfg.address ? "https://maps.google.com/?q=" + encodeURIComponent(cfg.address) : "#");
   $("floatWa").href = waLink();
   $("heroWhats").href = waLink();
 
@@ -262,10 +270,10 @@ function renderAll(){
   $("cfgPay").value = cfg.pay || "";
   $("cfgAddress").value = cfg.address || "";
   $("cfgMap").value = cfg.map || "";
-  $("cfgTimes").value = (cfg.times || []).join(",");
+  $("cfgTimes").value = (cfg.times || []).join(", ");
   $("cfgAdminPass").value = "";
-  $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1]).join(";");
-  $("cfgTestimonials").value = (cfg.testimonials || []).map(t => t[0] + "|" + t[1]).join(";");
+  $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1]).join("; ");
+  $("cfgTestimonials").value = (cfg.testimonials || []).map(t => t[0] + "|" + t[1]).join("; ");
   $("cfgGallery").value = gall.join("\n");
 
   renderTimes();
@@ -276,12 +284,20 @@ function renderAll(){
 function renderTimes(){
   const date = $("date").value;
   $("times").innerHTML = "";
-  if(!date){ return; }
+  if(!date){
+    $("times").innerHTML = '<p class="muted" style="margin:8px 0;width:100%">📅 Selecione uma data no campo acima para visualizar os horários disponíveis.</p>';
+    return;
+  }
+  if(!cfg.times || !cfg.times.length){
+    $("times").innerHTML = '<p class="muted" style="margin:8px 0;width:100%">Nenhum horário cadastrado. Adicione horários na área administrativa.</p>';
+    return;
+  }
   cfg.times.forEach(t => {
     let key = date + "_" + t;
     let busy = !!bookings[key];
     let isSelected = (selectedTime === t);
     let b = document.createElement("button");
+    b.type = "button";
     b.className = "time" + (busy ? " busy" : "") + (isSelected ? " active" : "");
     b.textContent = busy ? t + " • ocupado" : t;
     b.disabled = busy;
@@ -390,13 +406,14 @@ function showTab(name, el){
 }
 
 function saveConfig(){
-  cfg.phone = $("cfgPhone").value.replace(/\D/g, "");
-  cfg.deposit = Number($("cfgDeposit").value || 0);
+  cfg.phone = $("cfgPhone").value.replace(/\D/g, "") || "5594981911783";
+  cfg.deposit = Number(String($("cfgDeposit").value || "0").replace(",", ".")) || 0;
   cfg.pix = $("cfgPix").value;
   cfg.pay = $("cfgPay").value;
   cfg.address = $("cfgAddress").value;
   cfg.map = $("cfgMap").value;
-  cfg.times = $("cfgTimes").value.split(",").map(x => x.trim()).filter(Boolean);
+  let parsedTimes = $("cfgTimes").value.split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
+  cfg.times = parsedTimes.length ? parsedTimes : base.times.slice();
   let newPass = $("cfgAdminPass").value.trim();
   if(newPass){
     cfg.adminPass = newPass;
@@ -408,20 +425,24 @@ function saveConfig(){
 }
 
 function saveServices(){
-  cfg.services = $("cfgServices").value.split(";").map(x => {
+  let parsed = $("cfgServices").value.split(/[;\n]+/).map(x => {
     let a = x.split("|");
-    return [a[0].trim(), Number(a[1] || 0)];
-  }).filter(x => x[0]);
+    if(!a[0] || !a[0].trim()) return null;
+    let price = Number(String(a[1] || "0").replace("R$", "").replace(",", ".").trim()) || 0;
+    return [a[0].trim(), price];
+  }).filter(Boolean);
+  cfg.services = parsed.length ? parsed : base.services.slice();
   localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
   renderAll();
   msg("Serviços salvos.");
 }
 
 function saveTestimonials(){
-  cfg.testimonials = $("cfgTestimonials").value.split(";").map(x => {
+  let parsed = $("cfgTestimonials").value.split(/[;\n]+/).map(x => {
     let a = x.split("|");
     return [a[0].trim(), a.slice(1).join("|").trim()];
-  }).filter(x => x[0] && x[1]);
+  }).filter(x => x && x[0] && x[1]);
+  cfg.testimonials = parsed.length ? parsed : base.testimonials.slice();
   localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
   renderAll();
   msg("Depoimentos salvos.");
@@ -503,6 +524,9 @@ $("phone").addEventListener("input", (e) => {
 });
 
 $("date").min = getLocalDateStr();
+if (!$("date").value) {
+  $("date").value = getLocalDateStr();
+}
 $("date").addEventListener("change", () => { selectedTime = null; renderTimes(); renderSummary(); });
 $("service").addEventListener("change", renderSummary);
 $("category").addEventListener("change", renderSummary);
