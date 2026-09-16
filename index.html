@@ -188,13 +188,11 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <button id="cardMethod" class="payment-method" type="button" onclick="showPaymentMethod('card')">💳 Cartão</button>
 </div>
 <div id="pixPanel" class="payment-panel active">
-<p class="muted">Escaneie o QR Code ou copie a chave Pix abaixo.</p>
-<img id="pixQr" class="pix-qr" alt="QR Code para pagamento via Pix">
-<div id="pixUnavailable" class="notice" style="display:none">O QR Code Pix ainda não foi configurado pelo responsável.</div>
-<div id="pixKeyBox" class="pix-key">
-<input id="pixKeyValue" readonly aria-label="Chave Pix">
-<button type="button" onclick="copyPixKey()">Copiar</button>
-</div>
+<p class="muted">Gere o QR Code Pix exclusivo deste agendamento e pague pelo aplicativo do seu banco.</p>
+<button id="pixGenerateButton" class="btn btn-blue" type="button" onclick="startPixPayment()" style="width:100%;margin-top:14px">📱 Gerar QR Code Pix</button>
+<img id="pixGeneratedQr" class="pix-qr" alt="QR Code Pix" style="display:none">
+<textarea id="pixCopyCode" readonly rows="4" placeholder="O código Pix copia e cola aparecerá aqui." style="display:none;margin-top:12px"></textarea>
+<button id="pixCopyButton" class="btn btn-blue" type="button" onclick="copyGeneratedPix()" style="display:none;width:100%;margin-top:10px">Copiar código Pix</button>
 </div>
 <div id="cardPanel" class="payment-panel">
 <div class="notice">O pagamento com cartão será feito em um checkout seguro. Os dados do cartão não são armazenados neste site.</div>
@@ -514,7 +512,7 @@ function startPayment(){
       bookingData: Object.assign({}, pendingBooking)
     }));
 
-    $("paymentInstructions").textContent = `Pagamento em andamento. Confirme o pagamento na janela do Mercado Pago e, após aprovado, clique em "Continuar".`;
+    $("paymentInstructions").textContent = `Pagamento em andamento. Escolha Pix ou cartão no checkout do Mercado Pago e, após aprovado, volte para confirmar.`;
     $("paymentModal").classList.add("open");
     showPaymentMethod("card");
     $("cardPaymentLink").href = json.initPoint || json.sandboxInitPoint || "#";
@@ -538,6 +536,52 @@ function startPayment(){
     pendingBooking = null;
     $("paymentStep").style.display = "none";
     closePaymentModal();
+  });
+}
+
+async function startPixPayment(){
+  if(!pendingBooking || !pendingBooking.bookingId){
+    alert("Inicie o pagamento antes de gerar o Pix.");
+    return;
+  }
+
+  const button = $("pixGenerateButton");
+  button.disabled = true;
+  button.textContent = "Gerando Pix...";
+
+  try {
+    const response = await fetch(`${API_BASE}/api/create-pix-payment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId: pendingBooking.bookingId })
+    });
+    const data = await response.json();
+    if(!response.ok){
+      throw new Error(data.error || "Não foi possível gerar o Pix.");
+    }
+
+    $("pixGeneratedQr").src = `data:image/png;base64,${data.qrCodeBase64}`;
+    $("pixGeneratedQr").style.display = "block";
+    $("pixCopyCode").value = data.qrCode;
+    $("pixCopyCode").style.display = "block";
+    $("pixCopyButton").style.display = "inline-flex";
+    button.textContent = "Pix gerado";
+    pendingBooking.paymentId = data.paymentId;
+  } catch(error) {
+    console.error(error);
+    alert(error.message || "Não foi possível gerar o Pix.");
+    button.disabled = false;
+    button.textContent = "📱 Gerar QR Code Pix";
+  }
+}
+
+function copyGeneratedPix(){
+  const code = $("pixCopyCode").value;
+  navigator.clipboard.writeText(code).then(() => {
+    alert("Código Pix copiado.");
+  }).catch(() => {
+    $("pixCopyCode").select();
+    alert("Copie o código Pix selecionado.");
   });
 }
 

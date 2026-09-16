@@ -179,6 +179,57 @@ app.post('/api/create-payment', async (req, res) => {
   }
 });
 
+app.post('/api/create-pix-payment', async (req, res) => {
+  try {
+    if (!accessToken) {
+      return res.status(500).json({ error: 'Mercado Pago não configurado.' });
+    }
+
+    const { bookingId, email } = req.body || {};
+    const booking = bookingsById.get(bookingId);
+    if (!booking || booking.status !== 'pending') {
+      return res.status(404).json({ error: 'Agendamento de pagamento não encontrado ou já processado.' });
+    }
+
+    const pixPayment = await payment.create({
+      body: {
+        transaction_amount: Number(booking.amount),
+        description: booking.description || 'Agendamento de aula',
+        payment_method_id: 'pix',
+        external_reference: bookingId,
+        notification_url: `${getBaseUrl(req)}/api/webhook`,
+        payer: {
+          email: String(email || 'cliente@exemplo.com')
+        }
+      }
+    });
+
+    const transactionData = pixPayment.point_of_interaction?.transaction_data;
+    if (!transactionData?.qr_code || !transactionData?.qr_code_base64) {
+      return res.status(502).json({ error: 'O Mercado Pago não retornou os dados do QR Code Pix.' });
+    }
+
+    setPaymentStatus(bookingId, pixPayment.status || 'pending', {
+      paymentId: pixPayment.id,
+      paymentMethod: 'pix'
+    });
+
+    return res.json({
+      bookingId,
+      paymentId: pixPayment.id,
+      status: pixPayment.status,
+      qrCode: transactionData.qr_code,
+      qrCodeBase64: transactionData.qr_code_base64
+    });
+  } catch (error) {
+    console.error('Erro ao criar Pix:', error);
+    return res.status(500).json({
+      error: 'Não foi possível gerar o Pix.',
+      details: error.message
+    });
+  }
+});
+
 app.get('/api/booking-status', (req, res) => {
   const bookingId = req.query.bookingId;
   if (!bookingId) {
