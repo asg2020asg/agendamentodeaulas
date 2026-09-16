@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Aulas particulares de autoescola com Gerson Santana Aguiar. Agende sua aula de direção de forma rápida pelo WhatsApp.">
+<title>Gerson Santana Aguiar | Aulas Particulares de Autoescola</title>
+<style>
+:root{
+ --navy:#071426;--navy2:#0d2340;--blue:#1976d2;--blue2:#42a5f5;
+ --light:#f4f7fb;--white:#fff;--text:#122033;--muted:#66758a;
+ --green:#16a34a;--border:#e2e8f0;--shadow:0 18px 55px rgba(7,20,38,.10);
+}
+*{box-sizing:border-box;scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text);background:var(--light)}
+a{text-decoration:none;color:inherit}
+button,input,select,textarea{font:inherit}
+.container{width:min(1120px,calc(100% - 32px));margin:auto}
+header{position:relative;overflow:hidden;color:#fff;background:linear-gradient(115deg,#061426 0%,#0c2d52 52%,#1264a5 100%);min-height:620px}
+header:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 25%,rgba(66,165,245,.30),transparent 34%),linear-gradient(90deg,rgba(7,20,38,.88),rgba(7,20,38,.18));pointer-events:none}
+nav{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.logo{display:flex;align-items:center;gap:11px;font-weight:900}.logo-mark{width:44px;height:44px;border:1px solid #8ecbff55;background:#ffffff12;border-radius:13px;display:grid;place-items:center;font-size:22px}.logo small{display:block;font-size:10px;letter-spacing:1.5px;color:#b9dfff;margin-top:2px}
+.navlinks{display:flex;gap:22px;font-size:14px;color:#dceeff}.navlinks a:hover{color:#fff}
+.hero{position:relative;z-index:2;display:grid;grid-template-columns:1.03fr .97fr;align-items:center;gap:35px;padding:55px 0 90px}
+.kicker{display:inline-flex;border:1px solid #8ecbff55;background:#ffffff0e;border-radius:999px;padding:8px 13px;font-size:11px;font-weight:900;letter-spacing:1.5px}
+h1{font-size:clamp(39px,6vw,68px);line-height:1.02;margin:18px 0 16px;letter-spacing:-2px}.hero p{font-size:18px;line-height:1.65;color:#d6e9fb;max-width:620px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.btn{border:0;border-radius:13px;padding:14px 19px;font-weight:900;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;gap:8px}.btn-primary{background:#fff;color:#0b3a68}.btn-blue{background:var(--blue);color:#fff}.btn-green{background:var(--green);color:#fff}.btn-ghost{border:1px solid #b8dcff55;color:#fff;background:#ffffff08}
+.hero-photo{height:420px;border-radius:28px;overflow:hidden;box-shadow:0 25px 70px #0006;border:1px solid #ffffff22;background:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1100&q=85') center/cover;animation:float 5s ease-in-out infinite}.hero-photo:after{content:"";display:block;height:100%;background:linear-gradient(0deg,#061426aa,transparent 60%)}
+.stats{position:relative;margin-top:-55px;z-index:4}.statsbox{background:#fff;border-radius:22px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(3,1fr);padding:8px}.stat{text-align:center;padding:20px;border-right:1px solid var(--border)}.stat:last-child{border:0}.stat strong{display:block;font-size:20px}.stat span{font-size:13px;color:var(--muted)}
+section{padding:78px 0}.section-head{text-align:center;max-width:700px;margin:0 auto 38px}.section-head h2{font-size:36px;margin:0 0 10px}.section-head p{color:var(--muted);line-height:1.65}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:0 8px 28px #0714260a}.service{transition:.22s}.service:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:#9cccf4}.icon{width:46px;height:46px;border-radius:13px;background:#eaf4ff;display:grid;place-items:center;font-size:22px}.service h3{margin:18px 0 7px}.service p{color:var(--muted);font-size:14px;line-height:1.55}.service .price{font-weight:900;color:var(--blue);font-size:20px;margin:16px 0}
+.gallery{display:grid;grid-template-columns:1.4fr .8fr .8fr;grid-template-rows:220px 220px;gap:12px}.gallery div{border-radius:18px;overflow:hidden;background-position:center;background-size:cover}.g1{grid-row:1/3;background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1100&q=85')}.g2{background-image:url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=700&q=85')}.g3{background-image:url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=700&q=85')}.g4{background-image:url('https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&w=700&q=85')}.g5{background-image:url('https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=700&q=85')}
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.quote{font-size:15px;line-height:1.65;color:#394a5d}.person{margin-top:17px;font-weight:900}.stars{color:#e9a400;letter-spacing:2px}
+.booking{background:linear-gradient(135deg,#071426,#0f3e6c);color:#fff}.booking .section-head p{color:#c7ddf1}.booking-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.form-card{background:#fff;color:var(--text);border-radius:22px;padding:25px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-weight:800;font-size:13px;display:block;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:13px;background:#fff;outline:none}input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1976d218}.full{grid-column:1/-1}.times{display:flex;flex-wrap:wrap;gap:8px}.time{border:1px solid #bfdbfe;background:#eff6ff;color:#125aa0;padding:10px 13px;border-radius:10px;cursor:pointer}.time.active{background:var(--blue);color:#fff}.time.busy{background:#e5e7eb;color:#9ca3af;text-decoration:line-through;cursor:not-allowed}.summary{background:#f4f7fb;border-radius:14px;padding:14px;line-height:1.7;margin:15px 0;color:#334155}
+.location{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}.map{min-height:320px;border-radius:22px;overflow:hidden;background:linear-gradient(135deg,#dbeafe,#eff6ff);display:grid;place-items:center;color:#2563eb;font-size:70px}.location-info{padding:28px}.location-info p{color:var(--muted);line-height:1.7}.pill{display:inline-block;background:#eaf4ff;color:#1260a5;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900}
+footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer-brand{color:#fff;font-weight:900;font-size:18px}.float-wa{position:fixed;right:18px;bottom:18px;width:58px;height:58px;border-radius:50%;background:#16a34a;color:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 10px 30px #0004;z-index:20}.admin{display:none}.admin.open{display:block}.admin-wrap{background:#fff;border-radius:22px;padding:25px;margin-top:18px}.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.tab{background:#eef2f7;border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:800}.tab.active{background:var(--navy);color:#fff}.admin-panel{display:none}.admin-panel.active{display:block}.admin-list{display:grid;gap:10px}.booking-row{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--border);border-radius:13px;padding:13px}.danger{background:#fee2e2;color:#b91c1c}.notice{padding:12px;border-radius:12px;background:#eff6ff;color:#174b78;font-size:13px}.muted{color:var(--muted);font-size:13px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media(max-width:850px){.navlinks{display:none}.hero,.booking-grid,.location{grid-template-columns:1fr}.hero-photo{height:300px}.cards,.testimonials{grid-template-columns:1fr}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:200px 200px 200px}.g1{grid-row:auto;grid-column:1/3}.statsbox{grid-template-columns:1fr}.stat{border-right:0;border-bottom:1px solid var(--border)}.stat:last-child{border:0}}
+@media(max-width:560px){.container{width:min(100% - 22px,1120px)}section{padding:58px 0}.grid{grid-template-columns:1fr}.full{grid-column:auto}.gallery{display:grid;grid-template-columns:1fr 1fr}.g1{grid-column:1/3}.hero{padding-top:35px}h1{letter-spacing:-1px}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="container">
+<nav>
+<a class="logo" href="#"><span class="logo-mark">🚗</span><span>Gerson Santana Aguiar<small>AULAS PARTICULARES</small></span></a>
+<div class="navlinks"><a href="#aulas">Aulas</a><a href="#como">Como funciona</a><a href="#depoimentos">Depoimentos</a><a href="#localizacao">Localização</a><a href="#agendar">Agendar</a></div>
+</nav>
+<div class="hero">
+<div>
+<span class="kicker">AULAS PARTICULARES DE AUTOESCOLA</span>
+<h1>Mais confiança para assumir o volante.</h1>
+<p>Aulas individuais para quem quer praticar direção, ganhar segurança e se preparar melhor para seus objetivos ao volante.</p>
+<div class="actions"><a class="btn btn-primary" href="#agendar">📅 Agendar minha aula</a><a class="btn btn-ghost" id="heroWhats" href="#">💬 Falar no WhatsApp</a></div>
+</div>
+<div class="hero-photo" aria-label="Carro para aulas de direção"></div>
+</div>
+</div>
+</header>
+
+<div class="stats"><div class="container"><div class="statsbox">
+<div class="stat"><strong>🚗 Aula individual</strong><span>Foco total no aluno</span></div>
+<div class="stat"><strong>🕐 Horário agendado</strong><span>Organização e praticidade</span></div>
+<div class="stat"><strong>📲 WhatsApp</strong><span>Confirmação simples</span></div>
+</div></div></div>
+
+<section id="aulas">
+<div class="container">
+<div class="section-head"><span class="pill">SERVIÇOS</span><h2>Escolha sua aula</h2><p>Modalidades configuráveis de acordo com o atendimento oferecido.</p></div>
+<div id="serviceCards" class="cards"></div>
+</div>
+</section>
+
+<section id="como" style="background:#fff">
+<div class="container">
+<div class="section-head"><span class="pill">PASSO A PASSO</span><h2>Como funciona</h2><p>Agendar sua aula é simples.</p></div>
+<div class="cards">
+<div class="card"><div class="icon">01</div><h3>Escolha a aula</h3><p>Selecione a categoria e o tipo de aula que deseja realizar.</p></div>
+<div class="card"><div class="icon">02</div><h3>Escolha o horário</h3><p>Consulte a agenda e selecione uma data e um horário disponível.</p></div>
+<div class="card"><div class="icon">03</div><h3>Confirme pelo WhatsApp</h3><p>Seus dados são enviados para o WhatsApp para confirmação do atendimento.</p></div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<div class="section-head"><span class="pill">ESTRUTURA</span><h2>Um ambiente pensado para você praticar</h2><p>Fotos ilustrativas. Você poderá trocar todas as imagens pela área administrativa.</p></div>
+<div class="gallery"><div class="g1"></div><div class="g2"></div><div class="g3"></div><div class="g4"></div><div class="g5"></div></div>
+</div>
+</section>
+
+<section id="depoimentos" style="background:#fff">
+<div class="container">
+<div class="section-head"><span class="pill">DEPOIMENTOS</span><h2>Experiências dos alunos</h2><p>Área editável para você cadastrar depoimentos reais de clientes.</p></div>
+<div id="testimonialCards" class="testimonials"></div>
+</div>
+</section>
+
+<section class="booking" id="agendar">
+<div class="container">
+<div class="section-head"><span class="pill">AGENDE ONLINE</span><h2>Marque sua aula particular</h2><p>Escolha o serviço, a data e o horário. Depois, envie a solicitação pelo WhatsApp.</p></div>
+<div class="booking-grid">
+<div class="form-card">
+<h2 style="margin-top:0">Seu agendamento</h2>
+<div class="grid">
+<div class="full"><label>Aula</label><select id="service"></select></div>
+<div><label>Data</label><input id="date" type="date"></div>
+<div><label>Categoria</label><select id="category"><option>B</option><option>A</option><option>AB</option></select></div>
+<div class="full"><label>Horários disponíveis</label><div id="times" class="times"></div></div>
+<div><label>Nome completo</label><input id="name" placeholder="Seu nome"></div>
+<div><label>WhatsApp</label><input id="phone" placeholder="(19) 99999-9999"></div>
+<div class="full"><label>Observação</label><textarea id="obs" rows="3" placeholder="Alguma informação para o instrutor?"></textarea></div>
+</div>
+<div id="summary" class="summary">Selecione uma aula, data e horário.</div>
+<div id="depositInfo"></div>
+<button class="btn btn-blue" style="width:100%" onclick="confirmBooking()">📲 Enviar agendamento pelo WhatsApp</button>
+</div>
+<div class="card" style="background:#0b2440;color:#fff;border:1px solid #ffffff14">
+<h2>Agendamento simples e organizado</h2>
+<p style="color:#c7ddf1;line-height:1.7">Os horários configurados pelo responsável aparecem aqui. Depois que um horário for reservado, ele fica marcado neste dispositivo.</p>
+<div class="notice">💳 <b>Sinal:</b> o valor do sinal e o link/Pix podem ser configurados na área administrativa.</div>
+<br><div class="notice">📌 <b>Importante:</b> a confirmação definitiva pode ser feita pelo responsável diretamente no WhatsApp.</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="localizacao">
+<div class="container">
+<div class="section-head"><span class="pill">ONDE ATENDEMOS</span><h2>Localização e contato</h2><p>Configure o endereço e o link do mapa na área administrativa.</p></div>
+<div class="location card">
+<div class="map">📍</div>
+<div class="location-info"><span class="pill">ATENDIMENTO</span><h2 id="locationTitle">Local a definir</h2><p id="address">Endereço e região serão configurados pelo responsável.</p><p><b>WhatsApp:</b> <span id="displayPhone">Configurar</span></p><a id="mapLink" class="btn btn-blue" href="#" target="_blank">📍 Abrir no mapa</a></div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<div class="section-head"><span class="pill">ÁREA RESTRITA</span><h2>Administração</h2><p>Gerencie agenda, serviços, preços, sinal, contato e depoimentos.</p></div>
+<div style="text-align:center"><button class="btn btn-blue" onclick="openAdmin()">🔐 Entrar na área administrativa</button></div>
+<div id="admin" class="admin">
+<div class="admin-wrap">
+<div class="admin-tabs">
+<button class="tab active" onclick="showTab('agenda',this)">Agenda</button>
+<button class="tab" onclick="showTab('config',this)">Configurações</button>
+<button class="tab" onclick="showTab('servicos',this)">Serviços</button>
+<button class="tab" onclick="showTab('depo',this)">Depoimentos</button>
+</div>
+<div id="tab-agenda" class="admin-panel active"><h3>Agendamentos salvos neste dispositivo</h3><div id="adminBookings" class="admin-list"></div><br><button class="btn danger" onclick="clearBookings()">Limpar agenda local</button></div>
+<div id="tab-config" class="admin-panel">
+<div class="grid">
+<div><label>WhatsApp (somente números)</label><input id="cfgPhone"></div>
+<div><label>Valor do sinal (R$)</label><input id="cfgDeposit" type="number" step=".01"></div>
+<div><label>Chave Pix</label><input id="cfgPix"></div>
+<div><label>Link para pagamento</label><input id="cfgPay"></div>
+<div class="full"><label>Endereço/local de atendimento</label><input id="cfgAddress"></div>
+<div class="full"><label>Link do Google Maps</label><input id="cfgMap"></div>
+<div class="full"><label>Horários separados por vírgula</label><input id="cfgTimes"></div>
+</div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button>
+</div>
+<div id="tab-servicos" class="admin-panel"><label>Serviços: nome|preço;nome|preço</label><input id="cfgServices"><p class="muted">Exemplo: Aula particular B|80;Aula para habilitados|90</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
+<div id="tab-depo" class="admin-panel"><label>Depoimentos: nome|texto;nome|texto</label><textarea id="cfgTestimonials" rows="7"></textarea><br><br><button class="btn btn-blue" onclick="saveTestimonials()">Salvar depoimentos</button></div>
+<p id="adminMsg" class="muted"></p>
+</div>
+</div>
+</div>
+</section>
+
+<footer><div class="container"><div class="footer-brand">Gerson Santana Aguiar</div><p>Aulas particulares de autoescola • Agendamento online</p></div></footer>
+<a id="floatWa" class="float-wa" href="#" target="_blank" aria-label="WhatsApp">💬</a>
+
+<script>
+const base={
+phone:"5594981911783",deposit:0,pix:"",pay:"",
+address:"Endereço a definir",map:"",
+times:["08:00","09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+services:[["Aula particular - Categoria B",80],["Aula particular - Categoria A",80],["Aula particular - Categoria AB",90]],
+testimonials:[["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."]]
+};
+let cfg=JSON.parse(localStorage.getItem("gsa_cfg")||"null")||base;
+let bookings=JSON.parse(localStorage.getItem("gsa_bookings")||"{}");
+let selectedTime=null;
+
+function $(id){return document.getElementById(id)}
+function waLink(){return "https://wa.me/"+String(cfg.phone).replace(/\D/g,"")}
+function renderAll(){
+ $("service").innerHTML=cfg.services.map((s,i)=>`<option value="${i}">${esc(s[0])} — R$ ${money(s[1])}</option>`).join("");
+ $("serviceCards").innerHTML=cfg.services.map(s=>`<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3><p>Aula individual com acompanhamento personalizado.</p><div class="price">R$ ${money(s[1])}</div><a class="btn btn-blue" href="#agendar">Escolher esta aula</a></div>`).join("");
+ $("testimonialCards").innerHTML=cfg.testimonials.map(t=>`<div class="card"><div class="stars">★★★★★</div><p class="quote">“${esc(t[1])}”</p><div class="person">${esc(t[0])}</div></div>`).join("");
+ $("displayPhone").textContent=cfg.phone?formatPhone(cfg.phone):"Configurar";
+ $("address").textContent=cfg.address||"Endereço a definir";
+ $("mapLink").href=cfg.map||"#";
+ $("floatWa").href=waLink();
+ $("heroWhats").href=waLink();
+ $("cfgPhone").value=cfg.phone;$("cfgDeposit").value=cfg.deposit;$("cfgPix").value=cfg.pix;$("cfgPay").value=cfg.pay;$("cfgAddress").value=cfg.address;$("cfgMap").value=cfg.map;$("cfgTimes").value=cfg.times.join(",");
+ $("cfgServices").value=cfg.services.map(s=>s[0]+"|"+s[1]).join(";");
+ $("cfgTestimonials").value=cfg.testimonials.map(t=>t[0]+"|"+t[1]).join(";");
+ renderTimes();renderSummary();renderAdminBookings();
+}
+function renderTimes(){
+ const date=$("date").value;$("times").innerHTML="";selectedTime=null;
+ if(!date){return}
+ cfg.times.forEach(t=>{let key=date+"_"+t,busy=!!bookings[key];let b=document.createElement("button");b.className="time"+(busy?" busy":"");b.textContent=busy?t+" • ocupado":t;b.disabled=busy;b.onclick=()=>{selectedTime=t;renderTimes();renderSummary()};$("times").appendChild(b)})
+}
+function renderSummary(){
+ let i=Number($("service").value||0),s=cfg.services[i];
+ if(!s||!$("date").value||!selectedTime){$("summary").innerHTML="Selecione uma aula, data e horário.";return}
+ $("summary").innerHTML=`<b>Aula:</b> ${esc(s[0])}<br><b>Data:</b> ${dateBR($("date").value)}<br><b>Horário:</b> ${selectedTime}<br><b>Valor:</b> R$ ${money(s[1])}<br><b>Sinal:</b> R$ ${money(cfg.deposit)}`;
+ $("depositInfo").innerHTML=Number(cfg.deposit)>0?`<p class="muted">Sinal configurado: <b>R$ ${money(cfg.deposit)}</b>${cfg.pix?" • Pix disponível após o envio.":""}</p>`:"";
+}
+function confirmBooking(){
+ let i=Number($("service").value||0),s=cfg.services[i],name=$("name").value.trim(),phone=$("phone").value.trim(),date=$("date").value;
+ if(!s||!date||!selectedTime||!name||!phone){alert("Preencha nome, WhatsApp, aula, data e horário.");return}
+ let key=date+"_"+selectedTime;if(bookings[key]){alert("Esse horário já está ocupado.");renderTimes();return}
+ bookings[key]={name,phone,service:s[0],date,time:selectedTime,category:$("category").value,obs:$("obs").value,created:new Date().toLocaleString("pt-BR")};
+ localStorage.setItem("gsa_bookings",JSON.stringify(bookings));
+ let msg=`Olá, Gerson! Gostaria de agendar uma aula particular.%0A%0AAluno: ${enc(name)}%0AWhatsApp: ${enc(phone)}%0ACategoria: ${$("category").value}%0AAula: ${enc(s[0])}%0AData: ${enc(dateBR(date))}%0AHorário: ${selectedTime}%0AValor: R$ ${money(s[1])}%0ASinal: R$ ${money(cfg.deposit)}%0AObservação: ${enc($("obs").value||"Nenhuma")}`;
+ window.open(waLink()+"?text="+msg,"_blank");renderTimes();renderAdminBookings();
+}
+function openAdmin(){
+ let pass=prompt("Senha administrativa:");
+ if(pass==="1234"){$("admin").classList.add("open");$("admin").scrollIntoView({behavior:"smooth"});renderAdminBookings()}
+ else if(pass!==null)alert("Senha incorreta.");
+}
+function showTab(name,el){document.querySelectorAll(".admin-panel").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));$("tab-"+name).classList.add("active");el.classList.add("active")}
+function saveConfig(){
+ cfg.phone=$("cfgPhone").value.replace(/\D/g,"");cfg.deposit=Number($("cfgDeposit").value||0);cfg.pix=$("cfgPix").value;cfg.pay=$("cfgPay").value;cfg.address=$("cfgAddress").value;cfg.map=$("cfgMap").value;cfg.times=$("cfgTimes").value.split(",").map(x=>x.trim()).filter(Boolean);
+ localStorage.setItem("gsa_cfg",JSON.stringify(cfg));renderAll();msg("Configurações salvas.")
+}
+function saveServices(){
+ cfg.services=$("cfgServices").value.split(";").map(x=>{let a=x.split("|");return[a[0].trim(),Number(a[1]||0)]}).filter(x=>x[0]);
+ localStorage.setItem("gsa_cfg",JSON.stringify(cfg));renderAll();msg("Serviços salvos.")
+}
+function saveTestimonials(){
+ cfg.testimonials=$("cfgTestimonials").value.split(";").map(x=>{let a=x.split("|");return[a[0].trim(),a.slice(1).join("|").trim()] }).filter(x=>x[0]&&x[1]);
+ localStorage.setItem("gsa_cfg",JSON.stringify(cfg));renderAll();msg("Depoimentos salvos.")
+}
+function renderAdminBookings(){
+ let arr=Object.entries(bookings);
+ $("adminBookings").innerHTML=arr.length?arr.map(([key,b])=>`<div class="booking-row"><div><b>${esc(b.name)}</b><br><span class="muted">${esc(b.service)} • ${dateBR(b.date)} • ${esc(b.time)} • ${esc(b.phone)}</span></div><button class="btn danger" onclick="removeBooking('${encAttr(key)}')">Excluir</button></div>`).join(""):"<div class='notice'>Nenhum agendamento neste dispositivo.</div>";
+}
+function removeBooking(key){delete bookings[key];localStorage.setItem("gsa_bookings",JSON.stringify(bookings));renderAdminBookings();renderTimes()}
+function clearBookings(){if(confirm("Excluir todos os agendamentos salvos neste dispositivo?")){bookings={};localStorage.setItem("gsa_bookings","{}");renderAdminBookings();renderTimes()}}
+function msg(t){$("adminMsg").textContent=t;setTimeout(()=>{$("adminMsg").textContent=""},2500)}
+function dateBR(x){return new Date(x+"T12:00:00").toLocaleDateString("pt-BR")}
+function money(x){return Number(x||0).toFixed(2).replace(".",",")}
+function formatPhone(x){let n=String(x).replace(/\D/g,"");return n.length>=12?"("+n.slice(2,4)+") "+n.slice(4,9)+"-"+n.slice(9):n}
+function enc(x){return encodeURIComponent(x||"")}
+function encAttr(x){return encodeURIComponent(x)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+$("date").min=new Date().toISOString().slice(0,10);
+$("date").addEventListener("change",()=>{renderTimes();renderSummary()});
+$("service").addEventListener("change",renderSummary);
+renderAll();
+</script>
+</body>
+</html>
