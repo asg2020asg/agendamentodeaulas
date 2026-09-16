@@ -158,7 +158,6 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div id="tab-config" class="admin-panel">
 <div class="grid">
 <div><label>WhatsApp (somente números)</label><input id="cfgPhone"></div>
-<div class="full"><label>Chave Pix para pagamento</label><input id="cfgPix"></div>
 <div class="full"><div class="notice">A chave Pix é exibida apenas como alternativa. O agendamento só é liberado após aprovação do pagamento pelo Mercado Pago.</div></div>
 <div class="full"><label>Endereço/local de atendimento</label><input id="cfgAddress"></div>
 <div class="full"><label>Link do Google Maps</label><input id="cfgMap"></div>
@@ -192,14 +191,6 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <img id="pixGeneratedQr" class="pix-qr" alt="QR Code Pix" style="display:none">
 <textarea id="pixCopyCode" readonly rows="4" placeholder="O código Pix copia e cola aparecerá aqui." style="display:none;margin-top:12px"></textarea>
 <button id="pixCopyButton" class="btn btn-blue" type="button" onclick="copyGeneratedPix()" style="display:none;width:100%;margin-top:10px">Copiar código Pix</button>
-<div id="manualPixBox" class="notice" style="display:none;margin-top:14px">
-  <b>Chave Pix:</b>
-  <div class="pix-key" style="margin-top:8px">
-    <input id="manualPixKey" readonly aria-label="Chave Pix do recebedor">
-    <button type="button" onclick="copyManualPix()">Copiar</button>
-  </div>
-  <small>O agendamento só será confirmado após aprovação do pagamento pelo Mercado Pago.</small>
-</div>
 </div>
 <div id="cardPanel" class="payment-panel">
 <div class="notice">O pagamento com cartão será feito em um checkout seguro. Os dados do cartão não são armazenados neste site.</div>
@@ -225,7 +216,6 @@ const defaultGallery = [
 const base = {
   phone: "5594981911783",
   pay: "",
-  pix: "",
   pixQr: "",
   address: "Endereço a definir",
   map: "",
@@ -376,7 +366,6 @@ function renderAll(){
   }
 
   $("cfgPhone").value = cfg.phone || "";
-  $("cfgPix").value = cfg.pix || "";
   $("cfgAddress").value = cfg.address || "";
   $("cfgMap").value = cfg.map || "";
   $("cfgTimes").value = (cfg.times || []).join(", ");
@@ -386,8 +375,6 @@ function renderAll(){
   $("cfgGallery").value = gall.join("\n");
   $("paymentConfirmed").checked = false;
   updatePaymentConfirmState();
-  $("manualPixKey").value = cfg.pix || "";
-  $("manualPixBox").style.display = cfg.pix ? "block" : "none";
 
   renderTimes();
   renderSummary();
@@ -659,15 +646,6 @@ function closePaymentModal(){
   $("paymentModal").classList.remove("open");
 }
 
-function copyManualPix(){
-  navigator.clipboard.writeText($("manualPixKey").value).then(() => {
-    alert("Chave Pix copiada.");
-  }).catch(() => {
-    $("manualPixKey").select();
-    alert("Copie a chave Pix selecionada.");
-  });
-}
-
 function updatePaymentConfirmState(){
   let shouldEnable = !!pendingBooking && !!pendingBooking.bookingId;
   $("confirmPaymentButton").disabled = !shouldEnable;
@@ -766,7 +744,6 @@ function showTab(name, el){
 
 async function saveConfig(){
   cfg.phone = $("cfgPhone").value.replace(/\D/g, "") || "5594981911783";
-  cfg.pix = $("cfgPix").value.trim();
   cfg.address = $("cfgAddress").value;
   cfg.map = $("cfgMap").value;
   let parsedTimes = $("cfgTimes").value.split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
