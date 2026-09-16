@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
+const fs = require('fs');
 require('dotenv').config();
 
 const { MercadoPagoConfig, Preference, Payment, WebhookSignatureValidator } = require('mercadopago');
@@ -15,6 +16,18 @@ const allowedOrigin = process.env.FRONTEND_URL || '*';
 
 const bookingsById = new Map();
 const paymentStatusById = new Map();
+const siteConfigPath = path.join(__dirname, 'site-config.json');
+const defaultSiteConfig = {
+  phone: '5594981911783',
+  pix: '',
+  address: 'Endereço a definir',
+  map: '',
+  times: ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'],
+  services: [['Aula particular - Categoria B', 80], ['Aula particular - Categoria A', 80], ['Aula particular - Categoria AB', 90]],
+  testimonials: [],
+  gallery: [],
+  adminPass: process.env.ADMIN_PASSWORD || '1234'
+};
 
 if (!accessToken) {
   console.warn('⚠️  MP_ACCESS_TOKEN ausente. Defina no arquivo .env antes de subir o servidor.');
@@ -52,6 +65,22 @@ function getBaseUrl(req) {
 function getFrontendUrl(req) {
   const origin = process.env.FRONTEND_URL || req.headers.origin || getBaseUrl(req);
   return origin.replace(/\/$/, '');
+}
+
+function readSiteConfig() {
+  try {
+    if (!fs.existsSync(siteConfigPath)) {
+      fs.writeFileSync(siteConfigPath, JSON.stringify(defaultSiteConfig, null, 2));
+    }
+    return { ...defaultSiteConfig, ...JSON.parse(fs.readFileSync(siteConfigPath, 'utf8')) };
+  } catch (error) {
+    console.error('Erro ao ler configuração do site:', error);
+    return { ...defaultSiteConfig };
+  }
+}
+
+function writeSiteConfig(config) {
+  fs.writeFileSync(siteConfigPath, JSON.stringify(config, null, 2));
 }
 
 function createBookingId() {
@@ -92,6 +121,29 @@ app.get('/api/config', (req, res) => {
     configured: Boolean(accessToken),
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
   });
+});
+
+app.get('/api/site-config', (req, res) => {
+  const config = readSiteConfig();
+  const { adminPass, ...publicConfig } = config;
+  return res.json(publicConfig);
+});
+
+app.put('/api/site-config', (req, res) => {
+  const current = readSiteConfig();
+  const submittedPassword = req.headers['x-admin-password'];
+  if (!submittedPassword || submittedPassword !== current.adminPass) {
+    return res.status(401).json({ error: 'Senha administrativa inválida.' });
+  }
+
+  const next = {
+    ...current,
+    ...(req.body || {}),
+    adminPass: String(req.body?.adminPass || current.adminPass)
+  };
+  writeSiteConfig(next);
+  const { adminPass, ...publicConfig } = next;
+  return res.json({ saved: true, config: publicConfig });
 });
 
 app.post('/api/create-payment', async (req, res) => {

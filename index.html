@@ -255,6 +255,34 @@ if (cfg.scheduleVersion !== 2) {
 let bookings = JSON.parse(localStorage.getItem("gsa_bookings") || "{}");
 let selectedTime = null;
 
+async function loadSharedConfig(){
+  try {
+    const response = await fetch(`${API_BASE}/api/site-config`, { cache: "no-store" });
+    if(!response.ok) throw new Error("Não foi possível carregar a configuração central.");
+    const shared = await response.json();
+    cfg = Object.assign({}, cfg, shared, { adminPass: cfg.adminPass || "1234" });
+    localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
+  } catch(error) {
+    console.warn("Usando configuração local temporariamente:", error.message);
+  }
+  renderAll();
+}
+
+async function saveSharedConfig(){
+  const response = await fetch(`${API_BASE}/api/site-config`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-password": cfg.adminPass || "1234"
+    },
+    body: JSON.stringify(cfg)
+  });
+  const data = await response.json();
+  if(!response.ok) throw new Error(data.error || "Não foi possível salvar a configuração central.");
+  cfg = Object.assign({}, cfg, data.config);
+  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
+}
+
 function $(id){ return document.getElementById(id); }
 
 function getLocalDateStr(){
@@ -706,7 +734,7 @@ function showTab(name, el){
   el.classList.add("active");
 }
 
-function saveConfig(){
+async function saveConfig(){
   cfg.phone = $("cfgPhone").value.replace(/\D/g, "") || "5594981911783";
   cfg.pix = $("cfgPix").value.trim();
   cfg.address = $("cfgAddress").value;
@@ -718,12 +746,16 @@ function saveConfig(){
     cfg.adminPass = newPass;
     $("cfgAdminPass").value = "";
   }
-  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
-  renderAll();
-  msg("Configurações salvas.");
+  try {
+    await saveSharedConfig();
+    renderAll();
+    msg("Configurações salvas para todos os visitantes.");
+  } catch(error) {
+    alert(error.message);
+  }
 }
 
-function saveServices(){
+async function saveServices(){
   let parsed = $("cfgServices").value.split(/[;\n]+/).map(x => {
     let a = x.split("|");
     if(!a[0] || !a[0].trim()) return null;
@@ -731,12 +763,16 @@ function saveServices(){
     return [a[0].trim(), price];
   }).filter(Boolean);
   cfg.services = parsed.length ? parsed : base.services.slice();
-  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
-  renderAll();
-  msg("Serviços salvos.");
+  try {
+    await saveSharedConfig();
+    renderAll();
+    msg("Serviços salvos para todos os visitantes.");
+  } catch(error) {
+    alert(error.message);
+  }
 }
 
-function saveTestimonials(){
+async function saveTestimonials(){
   let parsed = $("cfgTestimonials").value.split(/[;\n]+/).map(x => {
     let a = x.split("|");
     let possibleVideo = a.length > 2 ? a[a.length - 1].trim() : "";
@@ -745,16 +781,24 @@ function saveTestimonials(){
     return [a[0].trim(), textParts.join("|").trim(), video];
   }).filter(x => x && x[0] && x[1]);
   cfg.testimonials = parsed.length ? parsed : base.testimonials.slice();
-  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
-  renderAll();
-  msg("Depoimentos salvos.");
+  try {
+    await saveSharedConfig();
+    renderAll();
+    msg("Depoimentos salvos para todos os visitantes.");
+  } catch(error) {
+    alert(error.message);
+  }
 }
 
-function saveGallery(){
+async function saveGallery(){
   cfg.gallery = $("cfgGallery").value.split("\n").map(x => x.trim()).filter(Boolean);
-  localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
-  renderAll();
-  msg("Fotos da galeria salvas.");
+  try {
+    await saveSharedConfig();
+    renderAll();
+    msg("Fotos salvas para todos os visitantes.");
+  } catch(error) {
+    alert(error.message);
+  }
 }
 
 function exportConfig(){
@@ -834,8 +878,7 @@ $("service").addEventListener("change", renderSummary);
 $("category").addEventListener("change", renderSummary);
 $("paymentConfirmed").addEventListener("change", updatePaymentConfirmState);
 updatePaymentConfirmState();
-renderAll();
-restorePaidBookingFromUrl();
+loadSharedConfig().then(restorePaidBookingFromUrl);
 </script>
 </body>
 </html>
