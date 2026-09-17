@@ -26,6 +26,7 @@ const defaultSiteConfig = {
   services: [['Aula particular - Categoria B', 80], ['Aula particular - Categoria A', 80], ['Aula particular - Categoria AB', 90]],
   testimonials: [],
   gallery: [],
+  blockedSlots: [],
   adminPass: process.env.ADMIN_PASSWORD || '1234'
 };
 
@@ -163,7 +164,10 @@ app.put('/api/site-config', (req, res) => {
 });
 
 app.get('/api/occupied-slots', (req, res) => {
-  return res.json(Object.keys(readBookings()));
+  const config = readSiteConfig();
+  const bookingSlots = Object.keys(readBookings());
+  const blockedSlots = Array.isArray(config.blockedSlots) ? config.blockedSlots : [];
+  return res.json([...new Set([...bookingSlots, ...blockedSlots])]);
 });
 
 app.get('/api/admin-bookings', (req, res) => {
@@ -207,7 +211,9 @@ app.post('/api/confirm-booking', (req, res) => {
 
   const bookings = readBookings();
   const slotKey = `${pending.date}_${pending.time}`;
-  if (bookings[slotKey]) {
+  const config = readSiteConfig();
+  const blockedSlots = Array.isArray(config.blockedSlots) ? config.blockedSlots : [];
+  if (bookings[slotKey] || blockedSlots.includes(slotKey)) {
     return res.status(409).json({ error: 'Esse horário já foi reservado.' });
   }
 

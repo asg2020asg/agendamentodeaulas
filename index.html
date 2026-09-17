@@ -154,7 +154,18 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <button class="tab" onclick="showTab('depo',this)">Depoimentos</button>
 <button class="tab" onclick="showTab('fotos',this)">Fotos</button>
 </div>
-<div id="tab-agenda" class="admin-panel active"><h3>Agendamentos salvos neste dispositivo</h3><div id="adminBookings" class="admin-list"></div><br><button class="btn danger" onclick="clearBookings()">Limpar agenda local</button></div>
+<div id="tab-agenda" class="admin-panel active">
+<h3>Bloquear horário para atendimento presencial</h3>
+<p class="muted">Esse horário ficará indisponível para agendamentos online, mas não será tratado como uma aula paga.</p>
+<div class="grid">
+<div><label>Data</label><input id="blockDate" type="date"></div>
+<div><label>Horário</label><select id="blockTime"></select></div>
+</div>
+<br><button class="btn btn-blue" onclick="addBlockedSlot()">Bloquear horário</button>
+<div id="blockedSlotsList" class="admin-list" style="margin-top:16px"></div>
+<hr style="border:0;border-top:1px solid var(--border);margin:24px 0">
+<h3>Agendamentos pagos</h3><div id="adminBookings" class="admin-list"></div><br><button class="btn danger" onclick="clearBookings()">Limpar agenda local</button>
+</div>
 <div id="tab-config" class="admin-panel">
 <div class="grid">
 <div><label>WhatsApp (somente números)</label><input id="cfgPhone"></div>
@@ -223,6 +234,7 @@ const base = {
   services: [["Aula particular - Categoria B",80],["Aula particular - Categoria A",80],["Aula particular - Categoria AB",90]],
   testimonials: [["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."]],
   gallery: defaultGallery,
+  blockedSlots: [],
   adminPass: "1234"
 };
 
@@ -236,6 +248,7 @@ if (!cfg.adminPass) cfg.adminPass = "1234";
 if (!Array.isArray(cfg.times) || cfg.times.length === 0) cfg.times = base.times.slice();
 if (!Array.isArray(cfg.services) || cfg.services.length === 0) cfg.services = base.services.slice();
 if (!Array.isArray(cfg.testimonials) || cfg.testimonials.length === 0) cfg.testimonials = base.testimonials.slice();
+if (!Array.isArray(cfg.blockedSlots)) cfg.blockedSlots = [];
 if (cfg.scheduleVersion !== 2) {
   cfg.times = base.times.slice();
   cfg.scheduleVersion = 2;
@@ -257,16 +270,18 @@ async function loadSharedConfig(){
     console.warn("Usando configuração local temporariamente:", error.message);
   }
 
-  async function loadSharedBookings(){
-    try {
-      const response = await fetch(`${API_BASE}/api/occupied-slots`, { cache: "no-store" });
-      if(!response.ok) throw new Error("Não foi possível carregar a agenda central.");
-      (await response.json()).forEach(key => { sharedBookings[key] = true; });
-    } catch(error) {
-      console.warn("Usando agenda local temporariamente:", error.message);
-    }
-  }
   renderAll();
+}
+
+async function loadSharedBookings(){
+  try {
+    const response = await fetch(`${API_BASE}/api/occupied-slots`, { cache: "no-store" });
+    if(!response.ok) throw new Error("Não foi possível carregar a agenda central.");
+    sharedBookings = {};
+    (await response.json()).forEach(key => { sharedBookings[key] = true; });
+  } catch(error) {
+    console.warn("Usando agenda local temporariamente:", error.message);
+  }
 }
 
 async function saveSharedConfig(){
@@ -373,12 +388,15 @@ function renderAll(){
   $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1]).join("; ");
   $("cfgTestimonials").value = (cfg.testimonials || []).map(t => [t[0], t[1], t[2] || ""].join("|")).join("\n");
   $("cfgGallery").value = gall.join("\n");
+  $("blockDate").min = getLocalDateStr();
+  $("blockTime").innerHTML = (cfg.times || []).map(time => `<option value="${esc(time)}">${esc(time)}</option>`).join("");
   $("paymentConfirmed").checked = false;
   updatePaymentConfirmState();
 
   renderTimes();
   renderSummary();
   renderAdminBookings();
+  renderBlockedSlots();
 }
 
 function renderTimes(){
@@ -404,12 +422,14 @@ function renderTimes(){
   }
   availableTimes.forEach(t => {
     let key = date + "_" + t;
-    let busy = !!bookings[key] || !!sharedBookings[key];
+    let busy = !!bookings[key] || !!sharedBookings[key] || (cfg.blockedSlots || []).includes(key);
     let isSelected = (selectedTime === t);
     let b = document.createElement("button");
     b.type = "button";
     b.className = "time" + (busy ? " busy" : "") + (isSelected ? " active" : "");
-    b.textContent = busy ? t + " • ocupado" : t;
+    b.textContent = busy
+      ? ((cfg.blockedSlots || []).includes(key) ? t + " • reservado presencialmente" : t + " • ocupado")
+      : t;
     b.disabled = busy;
     b.onclick = () => {
       if(busy) return;
@@ -508,7 +528,7 @@ function getBookingData(){
   }
 
   let key = date + "_" + selectedTime;
-  if(bookings[key]){
+  if(bookings[key] || sharedBookings[key] || (cfg.blockedSlots || []).includes(key)){
     alert("Esse horário já está ocupado. Por favor, escolha outro.");
     renderTimes();
     return null;
@@ -833,6 +853,56 @@ async function renderAdminBookings(){
   $("adminBookings").innerHTML = arr.length
     ? arr.map(([key, b]) => `<div class="booking-row"><div><b>${esc(b.name)}</b><br><span class="muted">${esc(b.service)} • ${dateBR(b.date)} • ${esc(b.time)} • ${esc(b.phone)}</span></div><button class="btn danger" onclick="removeBooking('${encAttr(key)}')">Excluir</button></div>`).join("")
     : "<div class='notice'>Nenhum agendamento neste dispositivo.</div>";
+}
+
+function renderBlockedSlots(){
+  const slots = (cfg.blockedSlots || []).slice().sort();
+  $("blockedSlotsList").innerHTML = slots.length
+    ? slots.map(key => {
+        const parts = key.split("_");
+        return `<div class="booking-row"><div><b>Atendimento presencial</b><br><span class="muted">${dateBR(parts[0])} • ${esc(parts[1])}</span></div><button class="btn danger" onclick="removeBlockedSlot('${encAttr(key)}')">Desbloquear</button></div>`;
+      }).join("")
+    : "<div class='notice'>Nenhum horário presencial bloqueado.</div>";
+}
+
+async function addBlockedSlot(){
+  const date = $("blockDate").value;
+  const time = $("blockTime").value;
+  if(!date || !time){
+    alert("Informe a data e o horário que serão reservados para atendimento presencial.");
+    return;
+  }
+  const key = date + "_" + time;
+  if((cfg.blockedSlots || []).includes(key)){
+    alert("Esse horário já está bloqueado para atendimento presencial.");
+    return;
+  }
+  if(bookings[key] || sharedBookings[key]){
+    alert("Esse horário já possui um agendamento pago e não pode ser bloqueado.");
+    return;
+  }
+  cfg.blockedSlots = [...(cfg.blockedSlots || []), key];
+  try {
+    await saveSharedConfig();
+    renderAll();
+    msg("Horário reservado para atendimento presencial.");
+  } catch(error) {
+    cfg.blockedSlots = cfg.blockedSlots.filter(item => item !== key);
+    alert(error.message);
+  }
+}
+
+async function removeBlockedSlot(encodedKey){
+  const key = decodeURIComponent(encodedKey);
+  cfg.blockedSlots = (cfg.blockedSlots || []).filter(item => item !== key);
+  try {
+    await saveSharedConfig();
+    renderAll();
+    msg("Bloqueio removido.");
+  } catch(error) {
+    cfg.blockedSlots = [...(cfg.blockedSlots || []), key];
+    alert(error.message);
+  }
 }
 
 async function removeBooking(key){
