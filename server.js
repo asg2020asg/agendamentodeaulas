@@ -238,9 +238,14 @@ app.post('/api/confirm-booking', async (req, res) => {
   writeBookings(bookings);
 
   // Criar evento no Google Calendar
-  await createCalendarEvent(confirmed, config);
+  const calendarEventId = await createCalendarEvent(confirmed, config);
 
-  return res.json({ saved: true, booking: confirmed });
+  return res.json({
+    saved: true,
+    booking: confirmed,
+    calendarEventId,
+    calendarSaved: Boolean(calendarEventId)
+  });
 });
 
 app.post('/api/create-payment', async (req, res) => {
@@ -509,14 +514,15 @@ async function createCalendarEvent(booking, siteConfig) {
     }
 
     // Converter data e hora para formato ISO
-    const [year, month, day] = booking.date.split('-');
-    const [hour, minute] = booking.time.split(':');
-    const startDateTime = new Date(year, month - 1, day, hour, minute, 0);
-    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hora
+    const startDateTime = new Date(`${booking.date}T${booking.time}:00-03:00`);
+    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+    if (Number.isNaN(startDateTime.getTime())) {
+      throw new Error('Data ou horário do agendamento inválido.');
+    }
 
     const event = {
       summary: `Aula - ${booking.name} (${booking.category})`,
-      description: `Aluno: ${booking.name}\nWhatsApp: ${booking.phone}\nAula: ${booking.service}\nSinal: R$ ${(booking.totalAmount || 0).toFixed(2)}\nValor Total: R$ ${(booking.totalAmount || 0).toFixed(2)}`,
+      description: `Aluno: ${booking.name}\nWhatsApp: ${booking.phone}\nAula: ${booking.service}\nSinal pago: R$ ${(booking.amount || 0).toFixed(2)}\nValor total: R$ ${(booking.totalAmount || 0).toFixed(2)}`,
       location: siteConfig.address || '',
       start: {
         dateTime: startDateTime.toISOString(),
@@ -531,27 +537,18 @@ async function createCalendarEvent(booking, siteConfig) {
         overrides: [
           { method: 'notification', minutes: 30 }
         ]
-      },
-      conferenceData: {
-        createRequest: {
-          requestId: booking.bookingId,
-          conferenceSolutionKey: {
-            key: 'hangoutsMeet'
-          }
-        }
       }
     };
 
     const response = await calendar.events.insert({
       calendarId: googleCalendarId,
-      resource: event,
-      conferenceDataVersion: 1
+      resource: event
     });
 
     console.log(`Evento criado no Google Calendar: ${response.data.id}`);
     return response.data.id;
   } catch (error) {
-    console.error('Erro ao criar evento no Google Calendar:', error.message);
+    console.error('Erro ao criar evento no Google Calendar:', error.response?.data || error.message);
     return null;
   }
 }

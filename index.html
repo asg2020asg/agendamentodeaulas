@@ -727,6 +727,9 @@ async function confirmPaymentBooking(){
       renderTimes();
       return;
     }
+    if(!saveData.calendarSaved){
+      alert("Agendamento salvo, mas não foi possível criar o evento no Google Calendar. Verifique a conexão da conta e os logs do servidor.");
+    }
 
     let booking = Object.assign({}, pendingBooking, saveData.booking, {
       created: new Date().toLocaleString("pt-BR"),
