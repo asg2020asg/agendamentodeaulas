@@ -23,7 +23,7 @@ const defaultSiteConfig = {
   address: 'Endereço a definir',
   map: '',
   times: ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'],
-  services: [['Aula particular - Categoria B', 80], ['Aula particular - Categoria A', 80], ['Aula particular - Categoria AB', 90]],
+  services: [['Aula particular - Categoria B', 80, 80], ['Aula particular - Categoria A', 80, 80], ['Aula particular - Categoria AB', 90, 90]],
   testimonials: [],
   gallery: [],
   blockedSlots: [],
@@ -115,6 +115,7 @@ function getBookingState(bookingId) {
     bookingId,
     status: paymentStatus,
     amount: booking.amount,
+    totalAmount: booking.totalAmount,
     service: booking.service,
     customerName: booking.name,
     customerPhone: booking.phone,
@@ -239,9 +240,10 @@ app.post('/api/create-payment', async (req, res) => {
     const payload = req.body || {};
     const bookingId = createBookingId();
     const finalAmount = Number(payload.amount || 0);
+    const totalAmount = Number(payload.totalAmount || 0);
     const title = payload.title || payload.service || 'Agendamento de aula';
 
-    if (!payload.name || !payload.phone || !payload.date || !payload.time || !title || !Number.isFinite(finalAmount) || finalAmount <= 0) {
+    if (!payload.name || !payload.phone || !payload.date || !payload.time || !title || !Number.isFinite(finalAmount) || finalAmount <= 0 || !Number.isFinite(totalAmount) || totalAmount < finalAmount) {
       return res.status(400).json({ error: 'Dados do agendamento incompletos.' });
     }
 
@@ -255,6 +257,7 @@ app.post('/api/create-payment', async (req, res) => {
       date: String(payload.date),
       time: String(payload.time),
       amount: Number(finalAmount),
+      totalAmount: Number(totalAmount),
       obs: String(payload.obs || '').trim(),
       createdAt: new Date().toISOString(),
       status: 'pending'

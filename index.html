@@ -176,7 +176,7 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div class="full"><label>Nova senha administrativa</label><input id="cfgAdminPass" type="password" placeholder="Deixe em branco para manter atual"></div>
 </div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button><button class="btn btn-ghost" style="color:var(--text);border-color:#cbd5e1;margin-left:8px" onclick="exportConfig()">📋 Copiar código base</button>
 </div>
-<div id="tab-servicos" class="admin-panel"><label>Serviços: nome|preço;nome|preço</label><textarea id="cfgServices" rows="3" placeholder="Aula particular B|80; Aula para habilitados|90"></textarea><p class="muted">Exemplo: Aula particular B|80; Aula para habilitados|90</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
+<div id="tab-servicos" class="admin-panel"><label>Serviços: nome|valor total|sinal;nome|valor total|sinal</label><textarea id="cfgServices" rows="3" placeholder="Aula particular B|80|20; Aula para habilitados|90|30"></textarea><p class="muted">Informe o valor total apenas para exibição e o sinal, que será o valor cobrado para garantir o agendamento.</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
 <div id="tab-depo" class="admin-panel"><label>Depoimentos: nome|texto|link do vídeo</label><textarea id="cfgTestimonials" rows="7"></textarea><p class="muted">Um por linha. Use o link de cada vídeo do YouTube, inclusive vídeos não listados. Exemplo: Maria|Gostei muito da aula!|https://youtu.be/ID_DO_VIDEO</p><button class="btn btn-blue" onclick="saveTestimonials()">Salvar depoimentos</button></div>
 <div id="tab-fotos" class="admin-panel"><label>Fotos da galeria (1 link por linha, até 5 imagens)</label><textarea id="cfgGallery" rows="6" placeholder="https://imagem1.jpg&#10;https://imagem2.jpg"></textarea><br><br><button class="btn btn-blue" onclick="saveGallery()">Salvar fotos</button></div>
 <p id="adminMsg" class="muted"></p>
@@ -231,7 +231,7 @@ const base = {
   address: "Endereço a definir",
   map: "",
   times: ["06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"],
-  services: [["Aula particular - Categoria B",80],["Aula particular - Categoria A",80],["Aula particular - Categoria AB",90]],
+  services: [["Aula particular - Categoria B",80,80],["Aula particular - Categoria A",80,80],["Aula particular - Categoria AB",90,90]],
   testimonials: [["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."]],
   gallery: defaultGallery,
   blockedSlots: [],
@@ -247,6 +247,7 @@ if (!cfg.gallery || !cfg.gallery.length) cfg.gallery = defaultGallery;
 if (!cfg.adminPass) cfg.adminPass = "1234";
 if (!Array.isArray(cfg.times) || cfg.times.length === 0) cfg.times = base.times.slice();
 if (!Array.isArray(cfg.services) || cfg.services.length === 0) cfg.services = base.services.slice();
+cfg.services = cfg.services.map(s => [s[0], Number(s[1] || 0), Number(s[2] ?? s[1] ?? 0)]);
 if (!Array.isArray(cfg.testimonials) || cfg.testimonials.length === 0) cfg.testimonials = base.testimonials.slice();
 if (!Array.isArray(cfg.blockedSlots)) cfg.blockedSlots = [];
 if (cfg.scheduleVersion !== 2) {
@@ -259,12 +260,17 @@ let bookings = JSON.parse(localStorage.getItem("gsa_bookings") || "{}");
 let sharedBookings = {};
 let selectedTime = null;
 
+function normalizeServices(){
+  cfg.services = (cfg.services || []).map(s => [s[0], Number(s[1] || 0), Number(s[2] ?? s[1] ?? 0)]);
+}
+
 async function loadSharedConfig(){
   try {
     const response = await fetch(`${API_BASE}/api/site-config`, { cache: "no-store" });
     if(!response.ok) throw new Error("Não foi possível carregar a configuração central.");
     const shared = await response.json();
     cfg = Object.assign({}, cfg, shared, { adminPass: cfg.adminPass || "1234" });
+    normalizeServices();
     localStorage.setItem("gsa_cfg", JSON.stringify(cfg));
   } catch(error) {
     console.warn("Usando configuração local temporariamente:", error.message);
@@ -359,8 +365,8 @@ function youtubeEmbedUrl(value){
 }
 
 function renderAll(){
-  $("service").innerHTML = cfg.services.map((s, i) => `<option value="${i}">${esc(s[0])} — R$ ${money(s[1])}</option>`).join("");
-  $("serviceCards").innerHTML = cfg.services.map((s, i) => `<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3><p>Aula individual com acompanhamento personalizado.</p><div class="price">R$ ${money(s[1])}</div><a class="btn btn-blue" href="#agendar" onclick="selectService(${i})">Escolher esta aula</a></div>`).join("");
+  $("service").innerHTML = cfg.services.map((s, i) => `<option value="${i}">${esc(s[0])} — Total: R$ ${money(s[1])} | Sinal: R$ ${money(s[2])}</option>`).join("");
+  $("serviceCards").innerHTML = cfg.services.map((s, i) => `<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3><p>Aula individual com acompanhamento personalizado.</p><div class="price">Total: R$ ${money(s[1])}<br><small>Sinal para reservar: R$ ${money(s[2])}</small></div><a class="btn btn-blue" href="#agendar" onclick="selectService(${i})">Escolher esta aula</a></div>`).join("");
   $("testimonialCards").innerHTML = cfg.testimonials.map(t => {
     let embedUrl = youtubeEmbedUrl(t[2]);
     let video = embedUrl
@@ -385,7 +391,7 @@ function renderAll(){
   $("cfgMap").value = cfg.map || "";
   $("cfgTimes").value = (cfg.times || []).join(", ");
   $("cfgAdminPass").value = "";
-  $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1]).join("; ");
+  $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1] + "|" + s[2]).join("; ");
   $("cfgTestimonials").value = (cfg.testimonials || []).map(t => [t[0], t[1], t[2] || ""].join("|")).join("\n");
   $("cfgGallery").value = gall.join("\n");
   $("blockDate").min = getLocalDateStr();
@@ -449,7 +455,7 @@ function renderSummary(){
     return;
   }
   let cat = $("category").value || "B";
-  $("summary").innerHTML = `<b>Aula:</b> ${esc(s[0])}<br><b>Categoria:</b> ${esc(cat)}<br><b>Data:</b> ${dateBR($("date").value)}<br><b>Horário:</b> ${selectedTime}<br><b>Valor:</b> R$ ${money(s[1])}`;
+  $("summary").innerHTML = `<b>Aula:</b> ${esc(s[0])}<br><b>Categoria:</b> ${esc(cat)}<br><b>Data:</b> ${dateBR($("date").value)}<br><b>Horário:</b> ${selectedTime}<br><b>Valor total:</b> R$ ${money(s[1])}<br><b>Sinal para confirmar:</b> R$ ${money(s[2])}`;
 }
 
 const API_BASE = (location.protocol === 'file:' ? 'http://localhost:3000' : window.location.origin || '');
@@ -539,6 +545,7 @@ function getBookingData(){
     phone,
     service: s[0],
     price: s[1],
+    deposit: s[2],
     date,
     time: selectedTime,
     category: $("category").value,
@@ -557,7 +564,8 @@ function startPayment(){
     service: cfg.services[Number($("service").value || 0)][0],
     category: $("category").value,
     title: cfg.services[Number($("service").value || 0)][0],
-    amount: Number(cfg.services[Number($("service").value || 0)][1] || 0),
+    amount: Number(cfg.services[Number($("service").value || 0)][2] || 0),
+    totalAmount: Number(cfg.services[Number($("service").value || 0)][1] || 0),
     date: $("date").value,
     time: selectedTime,
     obs: $("obs").value.trim(),
@@ -568,7 +576,7 @@ function startPayment(){
   $("paymentStep").style.display = "block";
   $("paymentInstructions").textContent = "Gerando o pagamento seguro no Mercado Pago...";
   $("paymentStep").scrollIntoView({behavior:"smooth", block:"nearest"});
-  $("paymentAmount").textContent = `Valor: R$ ${money(data.price)}`;
+  $("paymentAmount").textContent = `Sinal para garantir o agendamento: R$ ${money(data.deposit)}<br><small>Valor total da aula: R$ ${money(data.price)}</small>`;
   $("paymentConfirmed").checked = false;
   updatePaymentConfirmState();
   $("paymentModal").classList.add("open");
@@ -722,7 +730,7 @@ async function confirmPaymentBooking(){
     sharedBookings[slotKey] = true;
     localStorage.setItem("gsa_bookings", JSON.stringify(bookings));
 
-    let msg = `Olá, Gerson! O pagamento foi confirmado e gostaria de confirmar meu agendamento.%0A%0AAluno: ${enc(booking.name)}%0AWhatsApp: ${enc(booking.phone)}%0ACategoria: ${enc(booking.category)}%0AAula: ${enc(booking.service)}%0AData: ${enc(dateBR(booking.date))}%0AHorário: ${booking.time}%0AValor: R$ ${money(booking.price)}%0AStatus do pagamento: confirmado pelo Mercado Pago.%0A%0APolítica de cancelamento: em caso de desistência após o agendamento, será cobrada uma multa de R$ 50,00 sobre o pagamento realizado, e o restante será devolvido.%0AObservação: ${enc(booking.obs || "Nenhuma")}`;
+    let msg = `Olá, Gerson! O pagamento do sinal foi confirmado e gostaria de confirmar meu agendamento.%0A%0AAluno: ${enc(booking.name)}%0AWhatsApp: ${enc(booking.phone)}%0ACategoria: ${enc(booking.category)}%0AAula: ${enc(booking.service)}%0AData: ${enc(dateBR(booking.date))}%0AHorário: ${booking.time}%0AValor total: R$ ${money(booking.price)}%0ASinal pago: R$ ${money(booking.deposit)}%0AStatus do pagamento: sinal confirmado pelo Mercado Pago.%0A%0APolítica de cancelamento: em caso de desistência após o agendamento, será cobrada uma multa de R$ 50,00 sobre o sinal pago, e o restante será devolvido.%0AObservação: ${enc(booking.obs || "Nenhuma")}`;
 
     window.open(waLink() + "?text=" + msg, "_blank");
     localStorage.removeItem("gsa_pending_payment");
@@ -786,10 +794,15 @@ async function saveServices(){
   let parsed = $("cfgServices").value.split(/[;\n]+/).map(x => {
     let a = x.split("|");
     if(!a[0] || !a[0].trim()) return null;
-    let price = Number(String(a[1] || "0").replace("R$", "").replace(",", ".").trim()) || 0;
-    return [a[0].trim(), price];
+    let total = Number(String(a[1] || "0").replace("R$", "").replace(",", ".").trim()) || 0;
+    let deposit = Number(String(a[2] ?? a[1] ?? "0").replace("R$", "").replace(",", ".").trim()) || 0;
+    return [a[0].trim(), total, deposit];
   }).filter(Boolean);
   cfg.services = parsed.length ? parsed : base.services.slice();
+  if(cfg.services.some(s => s[2] <= 0 || s[2] > s[1])){
+    alert("Cada sinal deve ser maior que zero e não pode ultrapassar o valor total.");
+    return;
+  }
   try {
     await saveSharedConfig();
     renderAll();
