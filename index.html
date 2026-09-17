@@ -153,6 +153,7 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <button class="tab" onclick="showTab('servicos',this)">Serviços</button>
 <button class="tab" onclick="showTab('depo',this)">Depoimentos</button>
 <button class="tab" onclick="showTab('fotos',this)">Fotos</button>
+<button class="tab" onclick="showTab('google',this)">📅 Google Calendar</button>
 </div>
 <div id="tab-agenda" class="admin-panel active">
 <h3>Bloquear horário para atendimento presencial</h3>
@@ -179,6 +180,14 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div id="tab-servicos" class="admin-panel"><label>Serviços: nome|valor total|sinal;nome|valor total|sinal</label><textarea id="cfgServices" rows="3" placeholder="Aula particular B|80|20; Aula para habilitados|90|30"></textarea><p class="muted">Informe o valor total apenas para exibição e o sinal, que será o valor cobrado para garantir o agendamento.</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
 <div id="tab-depo" class="admin-panel"><label>Depoimentos: nome|texto|link do vídeo</label><textarea id="cfgTestimonials" rows="7"></textarea><p class="muted">Um por linha. Use o link de cada vídeo do YouTube, inclusive vídeos não listados. Exemplo: Maria|Gostei muito da aula!|https://youtu.be/ID_DO_VIDEO</p><button class="btn btn-blue" onclick="saveTestimonials()">Salvar depoimentos</button></div>
 <div id="tab-fotos" class="admin-panel"><label>Fotos da galeria (1 link por linha, até 5 imagens)</label><textarea id="cfgGallery" rows="6" placeholder="https://imagem1.jpg&#10;https://imagem2.jpg"></textarea><br><br><button class="btn btn-blue" onclick="saveGallery()">Salvar fotos</button></div>
+<div id="tab-google" class="admin-panel">
+<h3>Google Calendar</h3>
+<p class="muted">Conecte sua conta Google para que os agendamentos apareçam automaticamente no seu Google Agenda.</p>
+<div id="googleStatus" style="margin:16px 0;padding:12px;border-radius:10px;background:#eff6ff;color:#174b78"></div>
+<button id="googleConnectBtn" class="btn btn-blue" onclick="connectGoogleCalendar()" style="margin:12px 0">🔐 Conectar Google Calendar</button>
+<button id="googleDisconnectBtn" class="btn danger" onclick="disconnectGoogleCalendar()" style="display:none;margin:12px 0">❌ Desconectar Google Calendar</button>
+<p class="muted" style="font-size:12px;margin-top:16px">⚠️ Nota: Você precisa ter configurado as credenciais do Google Cloud no servidor (.env) antes de usar esta funcionalidade.</p>
+</div>
 <p id="adminMsg" class="muted"></p>
 </div>
 </div>
