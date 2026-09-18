@@ -14,7 +14,10 @@ const accessToken = process.env.MP_ACCESS_TOKEN;
 const publicKey = process.env.MP_PUBLIC_KEY;
 const webhookSecret = process.env.MP_WEBHOOK_SECRET || '';
 const publicBaseUrl = (process.env.PUBLIC_BASE_URL || '').replace(/\/$/, '');
-const allowedOrigin = process.env.FRONTEND_URL || '*';
+const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/$/, '');
+const allowedOrigin = frontendUrl
+  ? new URL(frontendUrl).origin
+  : '*';
 
 // Google Calendar Configuration
 const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
@@ -72,7 +75,7 @@ function getBaseUrl(req) {
 }
 
 function getFrontendUrl(req) {
-  const origin = process.env.FRONTEND_URL || req.headers.origin || getBaseUrl(req);
+  const origin = frontendUrl || req.headers.origin || getBaseUrl(req);
   return origin.replace(/\/$/, '');
 }
 
