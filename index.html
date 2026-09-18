@@ -177,7 +177,17 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div class="full"><label>Nova senha administrativa</label><input id="cfgAdminPass" type="password" placeholder="Deixe em branco para manter atual"></div>
 </div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button><button class="btn btn-ghost" style="color:var(--text);border-color:#cbd5e1;margin-left:8px" onclick="exportConfig()">📋 Copiar código base</button>
 </div>
-<div id="tab-servicos" class="admin-panel"><label>Serviços: nome|valor total|sinal;nome|valor total|sinal</label><textarea id="cfgServices" rows="3" placeholder="Aula particular B|80|20; Aula para habilitados|90|30"></textarea><p class="muted">Informe o valor total apenas para exibição e o sinal, que será o valor cobrado para garantir o agendamento.</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
+<div id="tab-servicos" class="admin-panel">
+<h3>Adicionar serviço</h3>
+<div class="grid">
+<div class="full"><label>Nome do serviço</label><input id="serviceName" placeholder="Aula particular - Categoria B"></div>
+<div><label>Valor total</label><input id="serviceTotal" inputmode="decimal" placeholder="R$ 80,00"></div>
+<div><label>Sinal para reservar</label><input id="serviceDeposit" inputmode="decimal" placeholder="R$ 20,00"></div>
+</div>
+<p class="muted">O valor total é informativo. O sinal é o valor cobrado no site.</p>
+<button class="btn btn-blue" onclick="addService()">Adicionar serviço</button>
+<div id="servicesAdminList" class="admin-list" style="margin-top:16px"></div>
+</div>
 <div id="tab-depo" class="admin-panel">
 <h3>Adicionar depoimento</h3>
 <div class="grid">
@@ -188,7 +198,12 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <br><button class="btn btn-blue" onclick="addTestimonial()">Adicionar depoimento</button>
 <div id="testimonialsAdminList" class="admin-list" style="margin-top:16px"></div>
 </div>
-<div id="tab-fotos" class="admin-panel"><label>Fotos da galeria (1 link por linha, até 5 imagens)</label><textarea id="cfgGallery" rows="6" placeholder="https://imagem1.jpg&#10;https://imagem2.jpg"></textarea><br><br><button class="btn btn-blue" onclick="saveGallery()">Salvar fotos</button></div>
+<div id="tab-fotos" class="admin-panel">
+<h3>Adicionar foto</h3>
+<label>Link da imagem</label><input id="galleryUrl" type="url" placeholder="https://imagem.jpg">
+<br><br><button class="btn btn-blue" onclick="addGalleryImage()">Adicionar foto</button>
+<div id="galleryAdminList" class="admin-list" style="margin-top:16px"></div>
+</div>
 <div id="tab-google" class="admin-panel">
 <h3>Google Calendar</h3>
 <p class="muted">Conecte sua conta Google para que os agendamentos apareçam automaticamente no seu Google Agenda.</p>
@@ -417,8 +432,6 @@ function renderAll(){
   $("cfgMap").value = cfg.map || "";
   $("cfgTimes").value = (cfg.times || []).join(", ");
   $("cfgAdminPass").value = "";
-  $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1] + "|" + s[2]).join("; ");
-  $("cfgGallery").value = gall.join("\n");
   $("blockDate").min = getLocalDateStr();
   $("blockTime").innerHTML = (cfg.times || []).map(time => `<option value="${esc(time)}">${esc(time)}</option>`).join("");
   $("paymentConfirmed").checked = false;
@@ -428,7 +441,9 @@ function renderAll(){
   renderSummary();
   renderAdminBookings();
   renderBlockedSlots();
+  renderServicesAdmin();
   renderTestimonialsAdmin();
+  renderGalleryAdmin();
 }
 
 function renderTimes(){
@@ -875,24 +890,57 @@ async function saveConfig(){
   }
 }
 
-async function saveServices(){
-  let parsed = $("cfgServices").value.split(/[;\n]+/).map(x => {
-    let a = x.split("|");
-    if(!a[0] || !a[0].trim()) return null;
-    let total = Number(String(a[1] || "0").replace("R$", "").replace(",", ".").trim()) || 0;
-    let deposit = Number(String(a[2] ?? a[1] ?? "0").replace("R$", "").replace(",", ".").trim()) || 0;
-    return [a[0].trim(), total, deposit];
-  }).filter(Boolean);
-  cfg.services = parsed.length ? parsed : base.services.slice();
-  if(cfg.services.some(s => s[2] <= 0 || s[2] > s[1])){
-    alert("Cada sinal deve ser maior que zero e não pode ultrapassar o valor total.");
+function parseMoney(value){
+  const normalized = String(value || "").replace(/R\$\s?/g, "").replace(/\./g, "").replace(",", ".").trim();
+  return Number(normalized) || 0;
+}
+
+function formatMoneyInput(input){
+  const value = parseMoney(input.value);
+  input.value = value ? `R$ ${money(value)}` : "";
+}
+
+function renderServicesAdmin(){
+  const list = $("servicesAdminList");
+  if(!list) return;
+  const services = cfg.services || [];
+  list.innerHTML = services.length
+    ? services.map((service, index) => `<div class="booking-row"><div><b>${esc(service[0])}</b><br><span class="muted">Valor total: R$ ${money(service[1])} • Sinal: R$ ${money(service[2])}</span></div><button class="btn danger" onclick="removeService(${index})">Excluir</button></div>`).join("")
+    : "<div class='notice'>Nenhum serviço cadastrado.</div>";
+}
+
+async function addService(){
+  const name = $("serviceName").value.trim();
+  const total = parseMoney($("serviceTotal").value);
+  const deposit = parseMoney($("serviceDeposit").value);
+  if(!name || total <= 0 || deposit <= 0 || deposit > total){
+    alert("Informe o nome, um valor total válido e um sinal maior que zero e até o valor total.");
     return;
   }
+  cfg.services = [...(cfg.services || []), [name, total, deposit]];
+  try {
+    await saveSharedConfig();
+    $("serviceName").value = "";
+    $("serviceTotal").value = "";
+    $("serviceDeposit").value = "";
+    renderAll();
+    msg("Serviço adicionado para todos os visitantes.");
+  } catch(error) {
+    cfg.services = cfg.services.slice(0, -1);
+    alert(error.message);
+  }
+}
+
+async function removeService(index){
+  const removed = (cfg.services || [])[index];
+  if(!removed || !confirm("Excluir este serviço?")) return;
+  cfg.services = cfg.services.filter((_, itemIndex) => itemIndex !== index);
   try {
     await saveSharedConfig();
     renderAll();
-    msg("Serviços salvos para todos os visitantes.");
+    msg("Serviço excluído.");
   } catch(error) {
+    cfg.services.splice(index, 0, removed);
     alert(error.message);
   }
 }
@@ -946,13 +994,50 @@ async function removeTestimonial(index){
   }
 }
 
-async function saveGallery(){
-  cfg.gallery = $("cfgGallery").value.split("\n").map(x => x.trim()).filter(Boolean);
+function renderGalleryAdmin(){
+  const list = $("galleryAdminList");
+  if(!list) return;
+  const gallery = cfg.gallery || [];
+  list.innerHTML = gallery.length
+    ? gallery.map((url, index) => `<div class="booking-row"><div><img src="${esc(url)}" alt="Foto ${index + 1}" style="width:70px;height:50px;object-fit:cover;border-radius:8px;vertical-align:middle;margin-right:10px"><span class="muted">${esc(url)}</span></div><button class="btn danger" onclick="removeGalleryImage(${index})">Excluir</button></div>`).join("")
+    : "<div class='notice'>Nenhuma foto cadastrada.</div>";
+}
+
+async function addGalleryImage(){
+  const url = $("galleryUrl").value.trim();
+  try {
+    const parsed = new URL(url);
+    if(!/^https?:$/.test(parsed.protocol)) throw new Error();
+  } catch(error) {
+    alert("Informe um link válido para a imagem.");
+    return;
+  }
+  if((cfg.gallery || []).length >= 5){
+    alert("Você pode cadastrar no máximo 5 fotos.");
+    return;
+  }
+  cfg.gallery = [...(cfg.gallery || []), url];
+  try {
+    await saveSharedConfig();
+    $("galleryUrl").value = "";
+    renderAll();
+    msg("Foto adicionada para todos os visitantes.");
+  } catch(error) {
+    cfg.gallery = cfg.gallery.slice(0, -1);
+    alert(error.message);
+  }
+}
+
+async function removeGalleryImage(index){
+  const removed = (cfg.gallery || [])[index];
+  if(!removed || !confirm("Excluir esta foto?")) return;
+  cfg.gallery = cfg.gallery.filter((_, itemIndex) => itemIndex !== index);
   try {
     await saveSharedConfig();
     renderAll();
-    msg("Fotos salvas para todos os visitantes.");
+    msg("Foto excluída.");
   } catch(error) {
+    cfg.gallery.splice(index, 0, removed);
     alert(error.message);
   }
 }
@@ -1087,6 +1172,12 @@ function money(x){
   return Number(x || 0).toFixed(2).replace(".", ",");
 }
 
+function setupMoneyInput(id){
+  const input = $(id);
+  if(!input) return;
+  input.addEventListener("blur", () => formatMoneyInput(input));
+}
+
 function enc(x){ return encodeURIComponent(x || ""); }
 function encAttr(x){ return encodeURIComponent(x); }
 function esc(s){
@@ -1114,6 +1205,8 @@ $("date").addEventListener("change", () => { selectedTime = null; renderTimes();
 $("service").addEventListener("change", renderSummary);
 $("category").addEventListener("change", renderSummary);
 $("paymentConfirmed").addEventListener("change", updatePaymentConfirmState);
+setupMoneyInput("serviceTotal");
+setupMoneyInput("serviceDeposit");
 updatePaymentConfirmState();
 loadSharedConfig().then(async () => {
   await loadSharedBookings();
