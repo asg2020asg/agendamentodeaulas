@@ -5,8 +5,6 @@ const fs = require('fs');
 require('dotenv').config();
 
 const { MercadoPagoConfig, Preference, Payment, WebhookSignatureValidator } = require('mercadopago');
-const { google } = require('googleapis');
-const { OAuth2 } = google.auth;
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,12 +16,6 @@ const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/$/, '');
 const allowedOrigin = frontendUrl
   ? new URL(frontendUrl).origin
   : '*';
-
-// Google Calendar Configuration
-const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
-const googleCalendarId = process.env.GOOGLE_CALENDAR_ID || 'primary';
-const googleTokenPath = path.join(__dirname, '.google-token.json');
 
 const bookingsById = new Map();
 const paymentStatusById = new Map();
@@ -240,15 +232,7 @@ app.post('/api/confirm-booking', async (req, res) => {
   bookings[slotKey] = confirmed;
   writeBookings(bookings);
 
-  // Criar evento no Google Calendar
-  const calendarEventId = await createCalendarEvent(confirmed, config);
-
-  return res.json({
-    saved: true,
-    booking: confirmed,
-    calendarEventId,
-    calendarSaved: Boolean(calendarEventId)
-  });
+  return res.json({ saved: true, booking: confirmed });
 });
 
 app.post('/api/create-payment', async (req, res) => {
@@ -453,169 +437,6 @@ app.post('/api/webhook', async (req, res) => {
 
 app.get('/health', (req, res) => {
   res.json({ ok: true, service: 'mercado-pago-node' });
-});
-
-// Google Calendar Functions
-function getGoogleAuthClient() {
-  if (!googleClientId || !googleClientSecret) {
-    return null;
-  }
-  const redirectUrl = `${process.env.PUBLIC_BASE_URL || 'http://localhost:3000'}/api/google-callback`;
-  return new OAuth2(googleClientId, googleClientSecret, redirectUrl);
-}
-
-function readGoogleToken() {
-  try {
-    if (fs.existsSync(googleTokenPath)) {
-      return JSON.parse(fs.readFileSync(googleTokenPath, 'utf8'));
-    }
-  } catch (error) {
-    console.error('Erro ao ler token Google:', error);
-  }
-  return null;
-}
-
-function saveGoogleToken(token) {
-  try {
-    fs.writeFileSync(googleTokenPath, JSON.stringify(token, null, 2));
-    console.log('Token Google salvo com sucesso');
-  } catch (error) {
-    console.error('Erro ao salvar token Google:', error);
-  }
-}
-
-async function getGoogleCalendarService() {
-  const auth = getGoogleAuthClient();
-  if (!auth) return null;
-
-  const token = readGoogleToken();
-  if (!token) return null;
-
-  try {
-    auth.setCredentials(token);
-    
-    // Verificar se token expirou
-    if (token.expiry_date && token.expiry_date < Date.now()) {
-      const { token: newToken } = await auth.refreshAccessToken();
-      saveGoogleToken(newToken);
-      auth.setCredentials(newToken);
-    }
-
-    return google.calendar({ version: 'v3', auth });
-  } catch (error) {
-    console.error('Erro ao criar serviço Google Calendar:', error);
-    return null;
-  }
-}
-
-async function createCalendarEvent(booking, siteConfig) {
-  try {
-    const calendar = await getGoogleCalendarService();
-    if (!calendar) {
-      console.warn('Google Calendar não configurado. Pulando criação de evento.');
-      return null;
-    }
-
-    // Converter data e hora para formato ISO
-    const startDateTime = new Date(`${booking.date}T${booking.time}:00-03:00`);
-    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
-    if (Number.isNaN(startDateTime.getTime())) {
-      throw new Error('Data ou horário do agendamento inválido.');
-    }
-
-    const event = {
-      summary: `Aula - ${booking.name} (${booking.category})`,
-      description: `Aluno: ${booking.name}\nWhatsApp: ${booking.phone}\nAula: ${booking.service}\nSinal pago: R$ ${(booking.amount || 0).toFixed(2)}\nValor total: R$ ${(booking.totalAmount || 0).toFixed(2)}`,
-      location: siteConfig.address || '',
-      start: {
-        dateTime: startDateTime.toISOString(),
-        timeZone: 'America/Sao_Paulo'
-      },
-      end: {
-        dateTime: endDateTime.toISOString(),
-        timeZone: 'America/Sao_Paulo'
-      },
-      reminders: {
-        useDefault: false,
-        overrides: [
-          { method: 'popup', minutes: 30 }
-        ]
-      }
-    };
-
-    const response = await calendar.events.insert({
-      calendarId: googleCalendarId,
-      resource: event
-    });
-
-    console.log(`Evento criado no Google Calendar: ${response.data.id}`);
-    return response.data.id;
-  } catch (error) {
-    console.error(
-      'Erro ao criar evento no Google Calendar:',
-      JSON.stringify(error.response?.data || { message: error.message })
-    );
-    return null;
-  }
-}
-
-// Google Calendar OAuth
-app.get('/api/google-auth-url', (req, res) => {
-  const auth = getGoogleAuthClient();
-  if (!auth) {
-    return res.status(400).json({ error: 'Google Calendar não configurado.' });
-  }
-
-  const scopes = ['https://www.googleapis.com/auth/calendar'];
-  const url = auth.generateAuthUrl({
-    access_type: 'offline',
-    scope: scopes,
-    prompt: 'consent'
-  });
-
-  res.json({ url });
-});
-
-app.get('/api/google-callback', async (req, res) => {
-  try {
-    const code = req.query.code;
-    if (!code) {
-      return res.status(400).json({ error: 'Código de autorização não recebido.' });
-    }
-
-    const auth = getGoogleAuthClient();
-    const { tokens } = await auth.getToken(code);
-    
-    saveGoogleToken(tokens);
-    
-    // Redirecionar de volta para a administração com sucesso
-    res.redirect(`${getFrontendUrl(req)}/?googleConnected=1`);
-  } catch (error) {
-    console.error('Erro ao trocar código por token:', error);
-    res.status(400).json({ error: 'Erro ao conectar com Google.' });
-  }
-});
-
-app.get('/api/google-calendar-status', (req, res) => {
-  const token = readGoogleToken();
-  res.json({ connected: !!token });
-});
-
-app.post('/api/google-disconnect', (req, res) => {
-  const config = readSiteConfig();
-  const submittedPassword = req.headers['x-admin-password'];
-  if (!submittedPassword || submittedPassword !== config.adminPass) {
-    return res.status(401).json({ error: 'Senha administrativa inválida.' });
-  }
-
-  try {
-    if (fs.existsSync(googleTokenPath)) {
-      fs.unlinkSync(googleTokenPath);
-    }
-    res.json({ disconnected: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao desconectar Google Calendar.' });
-  }
 });
 
 app.use((req, res) => {

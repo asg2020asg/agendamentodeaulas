@@ -153,7 +153,6 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <button class="tab" onclick="showTab('servicos',this)">Serviços</button>
 <button class="tab" onclick="showTab('depo',this)">Depoimentos</button>
 <button class="tab" onclick="showTab('fotos',this)">Fotos</button>
-<button class="tab" onclick="showTab('google',this)">📅 Google Calendar</button>
 </div>
 <div id="tab-agenda" class="admin-panel active">
 <h3>Bloquear horário para atendimento presencial</h3>
@@ -203,14 +202,6 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <label>Link da imagem</label><input id="galleryUrl" type="url" placeholder="https://imagem.jpg">
 <br><br><button class="btn btn-blue" onclick="addGalleryImage()">Adicionar foto</button>
 <div id="galleryAdminList" class="admin-list" style="margin-top:16px"></div>
-</div>
-<div id="tab-google" class="admin-panel">
-<h3>Google Calendar</h3>
-<p class="muted">Conecte sua conta Google para que os agendamentos apareçam automaticamente no seu Google Agenda.</p>
-<div id="googleStatus" style="margin:16px 0;padding:12px;border-radius:10px;background:#eff6ff;color:#174b78"></div>
-<button id="googleConnectBtn" class="btn btn-blue" onclick="connectGoogleCalendar()" style="margin:12px 0">🔐 Conectar Google Calendar</button>
-<button id="googleDisconnectBtn" class="btn danger" onclick="disconnectGoogleCalendar()" style="display:none;margin:12px 0">❌ Desconectar Google Calendar</button>
-<p class="muted" style="font-size:12px;margin-top:16px">⚠️ Nota: Você precisa ter configurado as credenciais do Google Cloud no servidor (.env) antes de usar esta funcionalidade.</p>
 </div>
 <p id="adminMsg" class="muted"></p>
 </div>
@@ -761,9 +752,6 @@ async function confirmPaymentBooking(){
       renderTimes();
       return;
     }
-    if(!saveData.calendarSaved){
-      alert("Agendamento salvo, mas não foi possível criar o evento no Google Calendar. Verifique a conexão da conta e os logs do servidor.");
-    }
 
     let booking = Object.assign({}, pendingBooking, saveData.booking, {
       created: new Date().toLocaleString("pt-BR"),
@@ -814,60 +802,6 @@ function showTab(name, el){
   document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
   $("tab-" + name).classList.add("active");
   el.classList.add("active");
-  if(name === "google") loadGoogleCalendarStatus();
-}
-
-async function loadGoogleCalendarStatus(){
-  const status = $("googleStatus");
-  const connectButton = $("googleConnectBtn");
-  const disconnectButton = $("googleDisconnectBtn");
-  if(!status || !connectButton || !disconnectButton) return;
-
-  status.textContent = "Verificando conexão com o Google Calendar...";
-  try {
-    const response = await fetch(`${API_BASE}/api/google-calendar-status`, { cache: "no-store" });
-    const data = await response.json();
-    if(!response.ok) throw new Error(data.error || "Não foi possível verificar a conexão.");
-    const connected = Boolean(data.connected);
-    status.textContent = connected
-      ? "✅ Google Calendar conectado. Os novos agendamentos serão adicionados à conta autorizada."
-      : "⚠️ Google Calendar ainda não conectado.";
-    connectButton.style.display = connected ? "none" : "inline-flex";
-    disconnectButton.style.display = connected ? "inline-flex" : "none";
-  } catch(error) {
-    status.textContent = "❌ " + error.message;
-    connectButton.style.display = "inline-flex";
-    disconnectButton.style.display = "none";
-  }
-}
-
-async function connectGoogleCalendar(){
-  try {
-    const response = await fetch(`${API_BASE}/api/google-auth-url`, { cache: "no-store" });
-    const data = await response.json();
-    if(!response.ok || !data.url){
-      throw new Error(data.error || "Google Calendar não está configurado no servidor.");
-    }
-    window.location.href = data.url;
-  } catch(error) {
-    alert(error.message);
-  }
-}
-
-async function disconnectGoogleCalendar(){
-  if(!confirm("Desconectar o Google Calendar desta conta?")) return;
-  try {
-    const response = await fetch(`${API_BASE}/api/google-disconnect`, {
-      method: "POST",
-      headers: { "x-admin-password": cfg.adminPass || "1234" }
-    });
-    const data = await response.json();
-    if(!response.ok) throw new Error(data.error || "Não foi possível desconectar o Google Calendar.");
-    await loadGoogleCalendarStatus();
-    msg("Google Calendar desconectado.");
-  } catch(error) {
-    alert(error.message);
-  }
 }
 
 async function saveConfig(){
