@@ -310,12 +310,12 @@ async function loadSharedBookings(){
   }
 }
 
-async function saveSharedConfig(){
+async function saveSharedConfig(authPassword = cfg.adminPass){
   const response = await fetch(`${API_BASE}/api/site-config`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "x-admin-password": cfg.adminPass || "1234"
+      "x-admin-password": authPassword || "1234"
     },
     body: JSON.stringify(cfg)
   });
@@ -816,6 +816,8 @@ function showTab(name, el){
 }
 
 async function saveConfig(){
+  const currentPassword = cfg.adminPass || "1234";
+  const previousPassword = cfg.adminPass;
   cfg.phone = $("cfgPhone").value.replace(/\D/g, "") || "5594981911783";
   cfg.locationName = $("cfgLocationName").value.trim() || "Local a definir";
   cfg.address = $("cfgAddress").value;
@@ -823,15 +825,14 @@ async function saveConfig(){
   let parsedTimes = $("cfgTimes").value.split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
   cfg.times = parsedTimes.length ? parsedTimes : base.times.slice();
   let newPass = $("cfgAdminPass").value.trim();
-  if(newPass){
-    cfg.adminPass = newPass;
-    $("cfgAdminPass").value = "";
-  }
+  if(newPass) cfg.adminPass = newPass;
   try {
-    await saveSharedConfig();
+    await saveSharedConfig(currentPassword);
+    $("cfgAdminPass").value = "";
     renderAll();
     msg("Configurações salvas para todos os visitantes.");
   } catch(error) {
+    cfg.adminPass = previousPassword;
     alert(error.message);
   }
 }
