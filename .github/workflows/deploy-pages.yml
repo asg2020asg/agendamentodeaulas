@@ -31,7 +31,7 @@ jobs:
       - name: Prepare public site
         run: |
           mkdir public
-          cp index.html pagamento-falha.html pagamento-pendente.html pagamento-sucesso.html politica-privacidade.html public/
+          cp index.html logo-gs.png pagamento-falha.html pagamento-pendente.html pagamento-sucesso.html politica-privacidade.html public/
 
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
