@@ -535,7 +535,7 @@ async function createCalendarEvent(booking, siteConfig) {
       reminders: {
         useDefault: false,
         overrides: [
-          { method: 'notification', minutes: 30 }
+          { method: 'popup', minutes: 30 }
         ]
       }
     };
@@ -548,7 +548,10 @@ async function createCalendarEvent(booking, siteConfig) {
     console.log(`Evento criado no Google Calendar: ${response.data.id}`);
     return response.data.id;
   } catch (error) {
-    console.error('Erro ao criar evento no Google Calendar:', error.response?.data || error.message);
+    console.error(
+      'Erro ao criar evento no Google Calendar:',
+      JSON.stringify(error.response?.data || { message: error.message })
+    );
     return null;
   }
 }
