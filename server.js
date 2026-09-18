@@ -586,7 +586,7 @@ app.get('/api/google-callback', async (req, res) => {
     saveGoogleToken(tokens);
     
     // Redirecionar de volta para a administração com sucesso
-    res.redirect('/?googleConnected=1');
+    res.redirect(`${getFrontendUrl(req)}/?googleConnected=1`);
   } catch (error) {
     console.error('Erro ao trocar código por token:', error);
     res.status(400).json({ error: 'Erro ao conectar com Google.' });

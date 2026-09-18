@@ -467,7 +467,9 @@ function renderSummary(){
   $("summary").innerHTML = `<b>Aula:</b> ${esc(s[0])}<br><b>Categoria:</b> ${esc(cat)}<br><b>Data:</b> ${dateBR($("date").value)}<br><b>Horário:</b> ${selectedTime}<br><b>Valor total:</b> R$ ${money(s[1])}<br><b>Sinal para confirmar:</b> R$ ${money(s[2])}`;
 }
 
-const API_BASE = (location.protocol === 'file:' ? 'http://localhost:3000' : window.location.origin || '');
+const API_BASE = location.protocol === 'file:'
+  ? 'http://localhost:3000'
+  : 'https://agendamentodeaulas.onrender.com';
 
 if (location.protocol === 'file:') {
   console.warn('Site aberto via file://. Redirecionando para a API local do servidor para o fluxo de pagamento funcionar.');
