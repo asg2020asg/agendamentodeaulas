@@ -33,6 +33,7 @@ section{padding:78px 0}.section-head{text-align:center;max-width:700px;margin:0 
 .quote{font-size:15px;line-height:1.65;color:#394a5d}.person{margin-top:17px;font-weight:900}.stars{color:#e9a400;letter-spacing:2px}.video-frame{aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#071426;margin-bottom:16px}.video-frame iframe{width:100%;height:100%;border:0}
 .booking{background:linear-gradient(135deg,#080808,#2b2200);color:#fff}.booking .section-head p{color:#fff4c7}.booking-grid{display:grid;grid-template-columns:1fr;gap:20px}.form-card{background:#fff;color:var(--text);border-radius:22px;padding:25px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-weight:800;font-size:13px;display:block;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:13px;background:#fff;outline:none}input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #ffd00033}.full{grid-column:1/-1}.times{display:flex;flex-wrap:wrap;gap:8px}.time{border:1px solid #ead27a;background:#fff9df;color:#725700;padding:10px 13px;border-radius:10px;cursor:pointer}.time.active{background:var(--blue);color:#111}.time.busy{background:#e5e7eb;color:#9ca3af;text-decoration:line-through;cursor:not-allowed}.summary{background:#fff9df;border-radius:14px;padding:14px;line-height:1.7;margin:15px 0;color:#4b3b00}
 .location{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}.map{min-height:320px;border-radius:22px;overflow:hidden;background:linear-gradient(135deg,#fff4c7,#fff);display:grid;place-items:center;color:#b18400;font-size:70px}.map iframe{width:100%;height:100%;min-height:320px;border:0}.location-info{padding:28px}.location-info p{color:var(--muted);line-height:1.7}.pill{display:inline-block;background:#fff4c7;color:#8b6900;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900}
+.socials{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}.social-link{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--border);border-radius:14px;padding:13px 18px;background:#fff;color:var(--text);font-weight:900;box-shadow:0 8px 22px #0000000a;transition:.2s}.social-link:hover{transform:translateY(-3px);border-color:var(--blue);box-shadow:var(--shadow)}.social-link.instagram{color:#b42375}.social-link.tiktok{color:#111}.social-link.youtube{color:#d21f16}
 footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer-brand{color:#fff;font-weight:900;font-size:18px}.float-wa{position:fixed;right:18px;bottom:18px;width:58px;height:58px;border-radius:50%;background:#16a34a;color:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 10px 30px #0004;z-index:20}.admin{display:none}.admin.open{display:block}.admin-wrap{background:#fff;border-radius:22px;padding:25px;margin-top:18px}.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.tab{background:#eef2f7;border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:800}.tab.active{background:var(--navy);color:#fff}.admin-panel{display:none}.admin-panel.active{display:block}.admin-list{display:grid;gap:10px}.booking-row{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--border);border-radius:13px;padding:13px}.danger{background:#fee2e2;color:#b91c1c}.notice{padding:12px;border-radius:12px;background:#eff6ff;color:#174b78;font-size:13px}.muted{color:var(--muted);font-size:13px}
 .payment-modal{position:fixed;inset:0;background:#071426aa;display:none;align-items:center;justify-content:center;padding:16px;z-index:40}.payment-modal.open{display:flex}.payment-dialog{width:min(470px,100%);max-height:90vh;overflow:auto;background:#fff;color:var(--text);border-radius:22px;padding:24px;box-shadow:0 25px 80px #0005;position:relative}.payment-close{position:absolute;right:16px;top:12px;border:0;background:transparent;font-size:25px;cursor:pointer;color:var(--muted)}.payment-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}.payment-method{border:1px solid var(--border);border-radius:12px;background:#f8fafc;padding:13px;cursor:pointer;font-weight:800}.payment-method.active{border-color:var(--blue);background:#eff6ff;color:#125aa0}.payment-panel{display:none}.payment-panel.active{display:block}.pix-qr{display:block;width:min(240px,100%);aspect-ratio:1;object-fit:contain;margin:16px auto;border:1px solid var(--border);border-radius:12px}.pix-key{display:flex;gap:8px}.pix-key input{min-width:0}.pix-key button{border:0;border-radius:10px;background:var(--blue);color:#fff;padding:0 13px;cursor:pointer;font-weight:800}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
@@ -166,6 +167,9 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div class="full"><label>Nome do local de atendimento</label><input id="cfgLocationName" placeholder="Ex: Centro de Treinamento Gerson"></div>
 <div class="full"><label>Endereço/local de atendimento (usado para fixar o mapa)</label><input id="cfgAddress" placeholder="Ex: Av. Exemplo, 123, Centro, Marabá - PA"></div>
 <div class="full"><label>Link do Google Maps</label><input id="cfgMap"></div>
+<div><label>Instagram</label><input id="cfgInstagram" type="url" placeholder="https://instagram.com/seu perfil"></div>
+<div><label>TikTok</label><input id="cfgTiktok" type="url" placeholder="https://tiktok.com/@seuusuario"></div>
+<div class="full"><label>YouTube</label><input id="cfgYoutube" type="url" placeholder="https://youtube.com/@seucanal"></div>
 <div class="full"><label>Horários disponíveis (separados por vírgula)</label><input id="cfgTimes" placeholder="Ex: 08:00, 09:00, 10:00, 14:00, 15:00"></div>
 <div class="full"><label>Nova senha administrativa</label><input id="cfgAdminPass" type="password" placeholder="Deixe em branco para manter atual"></div>
 </div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button><button class="btn btn-ghost" style="color:var(--text);border-color:#cbd5e1;margin-left:8px" onclick="exportConfig()">📋 Copiar código base</button>
@@ -204,7 +208,13 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 </div>
 </section>
 
-<footer><div class="container"><div class="footer-brand">Gerson Santana Aguiar</div><p>Aulas particulares de autoescola • Agendamento online</p><p><a href="/politica-privacidade.html" style="color:#c7ddf1">Política de privacidade</a></p></div></footer>
+<section id="redes" style="background:#fff">
+<div class="container">
+<div class="section-head"><span class="pill">REDES SOCIAIS</span><h2>Acompanhe nas redes</h2></div>
+<div id="socialLinks" class="socials"></div>
+</div>
+</section>
+<footer><div class="container"><div class="footer-brand">Gerson Santana Aguiar</div><p>Aulas particulares de autoescola • Agendamento online</p><p><a href="/politica-privacidade.html" style="color:#fff1b8">Política de privacidade</a></p></div></footer>
 <a id="floatWa" class="float-wa" href="#" target="_blank" aria-label="WhatsApp">💬</a>
 <div id="paymentModal" class="payment-modal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
 <div class="payment-dialog">
@@ -250,6 +260,9 @@ const base = {
   locationName: "Local a definir",
   address: "Endereço a definir",
   map: "",
+  instagram: "",
+  tiktok: "",
+  youtube: "",
   times: ["06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"],
   services: [["Aula particular - Categoria B",80,80,"Aula individual com acompanhamento personalizado."],["Aula particular - Categoria A",80,80,"Aula individual com acompanhamento personalizado."],["Aula particular - Categoria AB",90,90,"Aula individual com acompanhamento personalizado."]],
   testimonials: [["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."],["Aluno(a)","Espaço para depoimento real do aluno."]],
@@ -392,6 +405,16 @@ function youtubeEmbedUrl(value){
   }
 }
 
+function socialUrl(value){
+  if(!value) return "";
+  try{
+    const url = new URL(String(value).trim());
+    return /^https?:$/.test(url.protocol) ? url.href : "";
+  } catch(error){
+    return "";
+  }
+}
+
 function renderAll(){
   $("service").innerHTML = cfg.services.map((s, i) => `<option value="${i}">${esc(s[0])} — Total: R$ ${money(s[1])} | Sinal: R$ ${money(s[2])}</option>`).join("");
   $("serviceCards").innerHTML = cfg.services.map((s, i) => `<div class="card service"><div class="icon">🚗</div><h3>${esc(s[0])}</h3>${s[3] ? `<p>${esc(s[3])}</p>` : ""}<div class="price">Total: R$ ${money(s[1])}<br><small>Sinal para reservar: R$ ${money(s[2])}</small></div><a class="btn btn-blue" href="#agendar" onclick="selectService(${i})">Escolher esta aula</a></div>`).join("");
@@ -403,6 +426,12 @@ function renderAll(){
     return `<div class="card">${video}<div class="stars">★★★★★</div><p class="quote">“${esc(t[1])}”</p><div class="person">${esc(t[0])}</div></div>`;
   }).join("");
   $("locationTitle").textContent = cfg.locationName || "Local a definir";
+  const socialLinks = [
+    ["instagram", "📸 Instagram", socialUrl(cfg.instagram)],
+    ["tiktok", "♪ TikTok", socialUrl(cfg.tiktok)],
+    ["youtube", "▶ YouTube", socialUrl(cfg.youtube)]
+  ].filter(item => item[2]);
+  $("socialLinks").innerHTML = socialLinks.map(([className, label, url]) => `<a class="social-link ${className}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${label}</a>`).join("");
   $("displayPhone").textContent = cfg.phone ? formatPhone(cfg.phone) : "Configurar";
   $("address").textContent = cfg.address || "Endereço a definir";
   $("mapLink").href = cfg.map || (cfg.address ? "https://maps.google.com/?q=" + encodeURIComponent(cfg.address) : "#");
@@ -432,6 +461,9 @@ function renderAll(){
   $("cfgLocationName").value = cfg.locationName || "";
   $("cfgAddress").value = cfg.address || "";
   $("cfgMap").value = cfg.map || "";
+  $("cfgInstagram").value = cfg.instagram || "";
+  $("cfgTiktok").value = cfg.tiktok || "";
+  $("cfgYoutube").value = cfg.youtube || "";
   $("cfgTimes").value = (cfg.times || []).join(", ");
   $("cfgAdminPass").value = "";
   $("blockDate").min = getLocalDateStr();
@@ -822,6 +854,18 @@ async function saveConfig(){
   cfg.locationName = $("cfgLocationName").value.trim() || "Local a definir";
   cfg.address = $("cfgAddress").value;
   cfg.map = $("cfgMap").value;
+  const socialValues = {
+    instagram: $("cfgInstagram").value.trim(),
+    tiktok: $("cfgTiktok").value.trim(),
+    youtube: $("cfgYoutube").value.trim()
+  };
+  if(Object.values(socialValues).some(value => value && !socialUrl(value))){
+    alert("Informe links válidos começando com http:// ou https:// nas redes sociais.");
+    return;
+  }
+  cfg.instagram = socialValues.instagram;
+  cfg.tiktok = socialValues.tiktok;
+  cfg.youtube = socialValues.youtube;
   let parsedTimes = $("cfgTimes").value.split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
   cfg.times = parsedTimes.length ? parsedTimes : base.times.slice();
   let newPass = $("cfgAdminPass").value.trim();
