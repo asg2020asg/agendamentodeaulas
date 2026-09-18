@@ -178,7 +178,16 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 </div><br><button class="btn btn-blue" onclick="saveConfig()">Salvar configurações</button><button class="btn btn-ghost" style="color:var(--text);border-color:#cbd5e1;margin-left:8px" onclick="exportConfig()">📋 Copiar código base</button>
 </div>
 <div id="tab-servicos" class="admin-panel"><label>Serviços: nome|valor total|sinal;nome|valor total|sinal</label><textarea id="cfgServices" rows="3" placeholder="Aula particular B|80|20; Aula para habilitados|90|30"></textarea><p class="muted">Informe o valor total apenas para exibição e o sinal, que será o valor cobrado para garantir o agendamento.</p><button class="btn btn-blue" onclick="saveServices()">Salvar serviços</button></div>
-<div id="tab-depo" class="admin-panel"><label>Depoimentos: nome|texto|link do vídeo</label><textarea id="cfgTestimonials" rows="7"></textarea><p class="muted">Um por linha. Use o link de cada vídeo do YouTube, inclusive vídeos não listados. Exemplo: Maria|Gostei muito da aula!|https://youtu.be/ID_DO_VIDEO</p><button class="btn btn-blue" onclick="saveTestimonials()">Salvar depoimentos</button></div>
+<div id="tab-depo" class="admin-panel">
+<h3>Adicionar depoimento</h3>
+<div class="grid">
+<div><label>Nome do aluno</label><input id="testimonialName" placeholder="Nome do aluno"></div>
+<div><label>Link do vídeo no YouTube (opcional)</label><input id="testimonialVideo" placeholder="https://youtu.be/ID_DO_VIDEO"></div>
+<div class="full"><label>Depoimento</label><textarea id="testimonialText" rows="4" placeholder="Escreva o depoimento do aluno"></textarea></div>
+</div>
+<br><button class="btn btn-blue" onclick="addTestimonial()">Adicionar depoimento</button>
+<div id="testimonialsAdminList" class="admin-list" style="margin-top:16px"></div>
+</div>
 <div id="tab-fotos" class="admin-panel"><label>Fotos da galeria (1 link por linha, até 5 imagens)</label><textarea id="cfgGallery" rows="6" placeholder="https://imagem1.jpg&#10;https://imagem2.jpg"></textarea><br><br><button class="btn btn-blue" onclick="saveGallery()">Salvar fotos</button></div>
 <div id="tab-google" class="admin-panel">
 <h3>Google Calendar</h3>
@@ -409,7 +418,6 @@ function renderAll(){
   $("cfgTimes").value = (cfg.times || []).join(", ");
   $("cfgAdminPass").value = "";
   $("cfgServices").value = (cfg.services || []).map(s => s[0] + "|" + s[1] + "|" + s[2]).join("; ");
-  $("cfgTestimonials").value = (cfg.testimonials || []).map(t => [t[0], t[1], t[2] || ""].join("|")).join("\n");
   $("cfgGallery").value = gall.join("\n");
   $("blockDate").min = getLocalDateStr();
   $("blockTime").innerHTML = (cfg.times || []).map(time => `<option value="${esc(time)}">${esc(time)}</option>`).join("");
@@ -420,6 +428,7 @@ function renderAll(){
   renderSummary();
   renderAdminBookings();
   renderBlockedSlots();
+  renderTestimonialsAdmin();
 }
 
 function renderTimes(){
@@ -888,20 +897,51 @@ async function saveServices(){
   }
 }
 
-async function saveTestimonials(){
-  let parsed = $("cfgTestimonials").value.split(/[;\n]+/).map(x => {
-    let a = x.split("|");
-    let possibleVideo = a.length > 2 ? a[a.length - 1].trim() : "";
-    let video = youtubeEmbedUrl(possibleVideo) ? possibleVideo : "";
-    let textParts = video ? a.slice(1, -1) : a.slice(1);
-    return [a[0].trim(), textParts.join("|").trim(), video];
-  }).filter(x => x && x[0] && x[1]);
-  cfg.testimonials = parsed.length ? parsed : base.testimonials.slice();
+function renderTestimonialsAdmin(){
+  const list = $("testimonialsAdminList");
+  if(!list) return;
+  const testimonials = cfg.testimonials || [];
+  list.innerHTML = testimonials.length
+    ? testimonials.map((testimonial, index) => `<div class="booking-row"><div><b>${esc(testimonial[0])}</b><br><span class="muted">${esc(testimonial[1])}${testimonial[2] ? " • vídeo do YouTube" : ""}</span></div><button class="btn danger" onclick="removeTestimonial(${index})">Excluir</button></div>`).join("")
+    : "<div class='notice'>Nenhum depoimento cadastrado.</div>";
+}
+
+async function addTestimonial(){
+  const name = $("testimonialName").value.trim();
+  const text = $("testimonialText").value.trim();
+  const video = $("testimonialVideo").value.trim();
+  if(!name || !text){
+    alert("Informe o nome do aluno e o depoimento.");
+    return;
+  }
+  if(video && !youtubeEmbedUrl(video)){
+    alert("Informe um link válido de vídeo do YouTube.");
+    return;
+  }
+  cfg.testimonials = [...(cfg.testimonials || []), [name, text, video]];
+  try {
+    await saveSharedConfig();
+    $("testimonialName").value = "";
+    $("testimonialText").value = "";
+    $("testimonialVideo").value = "";
+    renderAll();
+    msg("Depoimento adicionado para todos os visitantes.");
+  } catch(error) {
+    cfg.testimonials = cfg.testimonials.slice(0, -1);
+    alert(error.message);
+  }
+}
+
+async function removeTestimonial(index){
+  const removed = (cfg.testimonials || [])[index];
+  if(!removed || !confirm("Excluir este depoimento?")) return;
+  cfg.testimonials = cfg.testimonials.filter((_, itemIndex) => itemIndex !== index);
   try {
     await saveSharedConfig();
     renderAll();
-    msg("Depoimentos salvos para todos os visitantes.");
+    msg("Depoimento excluído.");
   } catch(error) {
+    cfg.testimonials.splice(index, 0, removed);
     alert(error.message);
   }
 }
