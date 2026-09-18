@@ -931,7 +931,7 @@ async function removeTestimonial(index){
 function renderGalleryAdmin(){
   const list = $("galleryAdminList");
   if(!list) return;
-  const gallery = cfg.gallery || [];
+  const gallery = (cfg.gallery && cfg.gallery.length) ? cfg.gallery : defaultGallery;
   list.innerHTML = gallery.length
     ? gallery.map((url, index) => `<div class="booking-row"><div><img src="${esc(url)}" alt="Foto ${index + 1}" style="width:70px;height:50px;object-fit:cover;border-radius:8px;vertical-align:middle;margin-right:10px"><span class="muted">${esc(url)}</span></div><button class="btn danger" onclick="removeGalleryImage(${index})">Excluir</button></div>`).join("")
     : "<div class='notice'>Nenhuma foto cadastrada.</div>";
@@ -946,11 +946,12 @@ async function addGalleryImage(){
     alert("Informe um link válido para a imagem.");
     return;
   }
-  if((cfg.gallery || []).length >= 5){
+  const currentGallery = (cfg.gallery && cfg.gallery.length) ? cfg.gallery : defaultGallery;
+  if(currentGallery.length >= 5){
     alert("Você pode cadastrar no máximo 5 fotos.");
     return;
   }
-  cfg.gallery = [...(cfg.gallery || []), url];
+  cfg.gallery = [...currentGallery, url];
   try {
     await saveSharedConfig();
     $("galleryUrl").value = "";
