@@ -170,7 +170,7 @@ footer{background:#050e1a;color:#9fb0c4;padding:34px 0;text-align:center}.footer
 <div class="grid">
 <div><label>WhatsApp (somente números)</label><input id="cfgPhone"></div>
 <div class="full"><div class="notice">A chave Pix é exibida apenas como alternativa. O agendamento só é liberado após aprovação do pagamento pelo Mercado Pago.</div></div>
-<div class="full"><label>Endereço/local de atendimento</label><input id="cfgAddress"></div>
+<div class="full"><label>Endereço/local de atendimento (usado para fixar o mapa)</label><input id="cfgAddress" placeholder="Ex: Av. Exemplo, 123, Centro, Marabá - PA"></div>
 <div class="full"><label>Link do Google Maps</label><input id="cfgMap"></div>
 <div class="full"><label>Horários disponíveis (separados por vírgula)</label><input id="cfgTimes" placeholder="Ex: 08:00, 09:00, 10:00, 14:00, 15:00"></div>
 <div class="full"><label>Nova senha administrativa</label><input id="cfgAdminPass" type="password" placeholder="Deixe em branco para manter atual"></div>
@@ -409,8 +409,18 @@ function renderAll(){
   $("displayPhone").textContent = cfg.phone ? formatPhone(cfg.phone) : "Configurar";
   $("address").textContent = cfg.address || "Endereço a definir";
   $("mapLink").href = cfg.map || (cfg.address ? "https://maps.google.com/?q=" + encodeURIComponent(cfg.address) : "#");
-  $("mapFrame").src = cfg.address
-    ? "https://maps.google.com/maps?q=" + encodeURIComponent(cfg.address) + "&output=embed"
+  const configuredAddress = cfg.address && cfg.address !== "Endereço a definir" ? cfg.address : "";
+  let mapQuery = configuredAddress;
+  if(!mapQuery && cfg.map){
+    try {
+      const mapUrl = new URL(cfg.map);
+      mapQuery = mapUrl.searchParams.get("q") || mapUrl.pathname.replace(/^\/place\//, "").replaceAll("/", " ");
+    } catch(error) {
+      mapQuery = cfg.map;
+    }
+  }
+  $("mapFrame").src = mapQuery
+    ? "https://maps.google.com/maps?q=" + encodeURIComponent(mapQuery) + "&output=embed"
     : "about:blank";
   $("floatWa").href = waLink();
   $("heroWhats").href = waLink();
